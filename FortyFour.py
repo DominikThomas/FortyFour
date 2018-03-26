@@ -25,15 +25,18 @@ except AttributeError:
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName(_fromUtf8("Dialog"))
-        Dialog.resize(607, 275)
+        Dialog.resize(607, 278)
         self.buttonBox = QtGui.QDialogButtonBox(Dialog)
-        self.buttonBox.setGeometry(QtCore.QRect(400, 230, 181, 32))
+        self.buttonBox.setGeometry(QtCore.QRect(390, 230, 98, 27))
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
         self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
         self.buttonBox.setObjectName(_fromUtf8("buttonBox"))
         self.checkBox = QtGui.QCheckBox(Dialog)
         self.checkBox.setGeometry(QtCore.QRect(20, 150, 131, 22))
         self.checkBox.setObjectName(_fromUtf8("checkBox"))
+        self.checkBox_2 = QtGui.QCheckBox(Dialog)
+        self.checkBox_2.setGeometry(QtCore.QRect(160, 150, 171, 22))
+        self.checkBox_2.setObjectName(_fromUtf8("checkBox_2"))
         self.label = QtGui.QLabel(Dialog)
         self.label.setGeometry(QtCore.QRect(380, 40, 66, 17))
         self.label.setObjectName(_fromUtf8("label"))
@@ -83,7 +86,6 @@ class Ui_Dialog(object):
         self.line.setObjectName(_fromUtf8("line"))
         self.progressBar = QtGui.QProgressBar(Dialog)
         self.progressBar.setGeometry(QtCore.QRect(30, 190, 551, 23))
-        self.progressBar.setProperty("value", 0)
         self.progressBar.setObjectName(_fromUtf8("progressBar"))
         self.label_9 = QtGui.QLabel(Dialog)
         self.label_9.setGeometry(QtCore.QRect(10, 110, 151, 31))
@@ -91,7 +93,6 @@ class Ui_Dialog(object):
 
         self.retranslateUi(Dialog)
         QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("accepted()")), self.Forty_Three)
-    #    QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("accepted()")), Dialog.accept)
         QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("rejected()")), Dialog.reject)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
@@ -114,26 +115,20 @@ class Ui_Dialog(object):
         self.lineEdit_5.setText(_translate("Dialog", "510.9989", None))
         self.lineEdit_6.setText(_translate("Dialog", "1460.83", None))
         self.label_9.setText(_translate("Dialog", "vyhlazování pozadí", None))
-        self.sirka=self.lineEdit.text()
-        self.cykl=self.lineEdit_2.text()
-        self.config00=self.lineEdit_3.text()
-        self.config01=self.lineEdit_5.text()
-        self.config10=self.lineEdit_4.text()
-        self.config11=self.lineEdit_6.text()
-
-      
+        self.checkBox_2.setText(_translate("Dialog", "Vyhlazovat spektrum", None))
+        
     def Forty_Three(self):
         ## Vstupní konstanty
         
         #sirka=1 #*** A kdyby se to celé vypočetlo pro sirka=4 nebo 5 (5 raději ne, dělá to tam bordel...), bylo by pozadí ještě hladší :)
-        vyhlazeni="NE" #zda vyhlazovat samotné spektrum
+        vyhlazeni=self.checkBox_2.checkState() #zda vyhlazovat samotné spektrum
         vaha=50 #váha prostřední hodnoty při vyhlazování spektra
         ampl=-10000 #diskriminace dle plochy píku bez pozadí, píky s plochou menší než 'ampl' nebudou vypsány ve výstupním souboru 
-        grafy='a'
-        sirka=int(self.sirka)
-        cykl=int(self.cykl)
-        config0=[self.config00,self.config01]
-        config1=[self.config10,self.config11]
+        grafy=self.checkBox.checkState()
+        sirka=int(self.lineEdit.text())
+        cykl=int(self.lineEdit_2.text())
+        config0=[self.lineEdit_3.text(),self.lineEdit_5.text()]
+        config1=[self.lineEdit_4.text(),self.lineEdit_6.text()]
         ## Nastavení energetické kalibrace
         path0=os.getcwd()
         newconfig0=float(config0[1])-float(config0[0])*(float(config1[1])-float(config0[1]))/(float(config1[0])-float(config0[0]))
@@ -148,7 +143,8 @@ class Ui_Dialog(object):
         plot_pozadi=[0]*len(soubor)
         print ('Zpracovávám následující soubory (Celkem %i):' %(len(soubor)))
         for i1 in range(0,len(soubor)): # 1): #
-            print (i1, soubor[i1].replace(path0 + '/', ''))
+            self.progressBar.setProperty("value", i1/len(soubor)*100)
+            #print (i1, soubor[i1].replace(path0 + '/', ''))
             Y0=[0]*8192
             f1=open(soubor[i1])
             for i2 in range(0, len(Y0)):
@@ -231,7 +227,7 @@ class Ui_Dialog(object):
             for i9 in range (0, len(G23)):
             #if i1==7:
             #	print('Y, G23[i9]', len(Y), G23[i9])
-                pozadi.append(Y[G23[i9]])   #***Něco je špatně...
+                pozadi.append(Y[G23[i9]])  
         
         ## Vyhlazování pozadí
             
@@ -317,9 +313,9 @@ class Ui_Dialog(object):
                 vystup.write('%13f            %14f \n' % (G20[i], G26[i]) )
             vystup.close
             
-        ## Vykreslování grafů spekter a pozadí
-            
-        if (grafy=='ano') or (grafy=='Ano') or (grafy=='a') or (grafy=='A') or (grafy=='1') or (grafy=='Y') or (grafy=='y') or (grafy=='yes') or (grafy=='Yes'):
+        ## Vykreslování grafů spekter a pozadí 
+        if (grafy==2):
+            self.progressBar.setProperty("value", 100)
             print('Hotovo! Zobrazuji grafy.')
             for i12 in range (0,len(soubor)):
                 matplotlib.pyplot.figure(i12)
@@ -330,6 +326,7 @@ class Ui_Dialog(object):
                 matplotlib.pyplot.plot(C2, plot_pozadi[i12], 'r') #vykreslení pozadí
             matplotlib.pyplot.show()
         else:
+            self.progressBar.setProperty("value", 100)
             print('Hotovo!')
             
   
