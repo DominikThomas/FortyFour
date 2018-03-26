@@ -34,7 +34,7 @@ class FortyFour(QtGui.QMainWindow, rozhrani.Ui_Dialog, FortyThree.Vypocet):
         self.textBrowser.setText('Byla vybrána složka %s' %(self.slozka))
     
     def reject(self):
-        exit(0)
+        sys.exit()
         
 def main():
     app = QtGui.QApplication(sys.argv)  
