@@ -25,18 +25,16 @@ except AttributeError:
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName(_fromUtf8("Dialog"))
-        Dialog.resize(607, 278)
-        self.buttonBox = QtGui.QDialogButtonBox(Dialog)
-        self.buttonBox.setGeometry(QtCore.QRect(390, 230, 98, 27))
-        self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
-        self.buttonBox.setObjectName(_fromUtf8("buttonBox"))
+        Dialog.resize(607, 275)
+        self.pushButton = QtGui.QPushButton(Dialog)
+        self.pushButton.setGeometry(QtCore.QRect(490, 230, 98, 27))
+        self.pushButton.setObjectName(_fromUtf8("pushButton"))
+        self.pushButton_2 = QtGui.QPushButton(Dialog)
+        self.pushButton_2.setGeometry(QtCore.QRect(390, 230, 98, 27))
+        self.pushButton_2.setObjectName(_fromUtf8("pushButton_2"))
         self.checkBox = QtGui.QCheckBox(Dialog)
         self.checkBox.setGeometry(QtCore.QRect(20, 150, 131, 22))
         self.checkBox.setObjectName(_fromUtf8("checkBox"))
-        self.checkBox_2 = QtGui.QCheckBox(Dialog)
-        self.checkBox_2.setGeometry(QtCore.QRect(160, 150, 171, 22))
-        self.checkBox_2.setObjectName(_fromUtf8("checkBox_2"))
         self.label = QtGui.QLabel(Dialog)
         self.label.setGeometry(QtCore.QRect(380, 40, 66, 17))
         self.label.setObjectName(_fromUtf8("label"))
@@ -92,8 +90,8 @@ class Ui_Dialog(object):
         self.label_9.setObjectName(_fromUtf8("label_9"))
 
         self.retranslateUi(Dialog)
-        QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("accepted()")), self.Forty_Three)
-        QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("rejected()")), Dialog.reject)
+        QtCore.QObject.connect(self.pushButton, self.Forty_Three)
+        QtCore.QObject.connect(self.pushButton_2, QtCore.SIGNAL(_fromUtf8("rejected()")), Dialog.reject)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
 
@@ -115,13 +113,15 @@ class Ui_Dialog(object):
         self.lineEdit_5.setText(_translate("Dialog", "510.9989", None))
         self.lineEdit_6.setText(_translate("Dialog", "1460.83", None))
         self.label_9.setText(_translate("Dialog", "vyhlazování pozadí", None))
-        self.checkBox_2.setText(_translate("Dialog", "Vyhlazovat spektrum", None))
+        self.pushButton.setText(_translate("Dialog", "Spustit", None))
+        self.pushButton_2.setText(_translate("Dialog", "Ukončit", None))
+
         
     def Forty_Three(self):
         ## Vstupní konstanty
         
         #sirka=1 #*** A kdyby se to celé vypočetlo pro sirka=4 nebo 5 (5 raději ne, dělá to tam bordel...), bylo by pozadí ještě hladší :)
-        vyhlazeni=self.checkBox_2.checkState() #zda vyhlazovat samotné spektrum
+        vyhlazeni="NE" #zda vyhlazovat samotné spektrum
         vaha=50 #váha prostřední hodnoty při vyhlazování spektra
         ampl=-10000 #diskriminace dle plochy píku bez pozadí, píky s plochou menší než 'ampl' nebudou vypsány ve výstupním souboru 
         grafy=self.checkBox.checkState()
