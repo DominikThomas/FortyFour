@@ -3,7 +3,6 @@
 
 import sys
 from PyQt4 import QtCore, QtGui
-from PyQt4.QtCore import pyqtSlot
 import matplotlib
 matplotlib.use("Qt4Agg", force=True) #Nutno #Qt5Agg způsobuje neplynulost při procházení grafů
 import numpy as np, os, glob, sys, matplotlib.pyplot
@@ -25,38 +24,30 @@ except AttributeError:
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName(_fromUtf8("Dialog"))
-        Dialog.resize(607, 278)
-        self.buttonBox = QtGui.QDialogButtonBox(Dialog)
-        self.buttonBox.setGeometry(QtCore.QRect(400, 230, 181, 32))
-        self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
-        self.buttonBox.setObjectName(_fromUtf8("buttonBox"))
+        Dialog.resize(625, 295)
         self.checkBox = QtGui.QCheckBox(Dialog)
-        self.checkBox.setGeometry(QtCore.QRect(20, 150, 131, 22))
+        self.checkBox.setGeometry(QtCore.QRect(300, 150, 131, 22))
         self.checkBox.setObjectName(_fromUtf8("checkBox"))
-        self.checkBox_2 = QtGui.QCheckBox(Dialog)
-        self.checkBox_2.setGeometry(QtCore.QRect(160, 150, 171, 22))
-        self.checkBox_2.setObjectName(_fromUtf8("checkBox_2"))
         self.label = QtGui.QLabel(Dialog)
-        self.label.setGeometry(QtCore.QRect(380, 40, 66, 17))
+        self.label.setGeometry(QtCore.QRect(390, 40, 66, 17))
         self.label.setObjectName(_fromUtf8("label"))
         self.label_2 = QtGui.QLabel(Dialog)
-        self.label_2.setGeometry(QtCore.QRect(480, 40, 91, 17))
+        self.label_2.setGeometry(QtCore.QRect(490, 40, 91, 17))
         self.label_2.setObjectName(_fromUtf8("label_2"))
         self.label_3 = QtGui.QLabel(Dialog)
-        self.label_3.setGeometry(QtCore.QRect(300, 60, 51, 31))
+        self.label_3.setGeometry(QtCore.QRect(310, 60, 51, 31))
         self.label_3.setObjectName(_fromUtf8("label_3"))
         self.label_4 = QtGui.QLabel(Dialog)
-        self.label_4.setGeometry(QtCore.QRect(300, 100, 51, 31))
+        self.label_4.setGeometry(QtCore.QRect(310, 100, 51, 31))
         self.label_4.setObjectName(_fromUtf8("label_4"))
         self.label_5 = QtGui.QLabel(Dialog)
         self.label_5.setGeometry(QtCore.QRect(10, 60, 151, 31))
         self.label_5.setObjectName(_fromUtf8("label_5"))
         self.label_6 = QtGui.QLabel(Dialog)
-        self.label_6.setGeometry(QtCore.QRect(360, 10, 171, 17))
+        self.label_6.setGeometry(QtCore.QRect(370, 10, 171, 17))
         self.label_6.setObjectName(_fromUtf8("label_6"))
         self.label_7 = QtGui.QLabel(Dialog)
-        self.label_7.setGeometry(QtCore.QRect(100, 10, 171, 17))
+        self.label_7.setGeometry(QtCore.QRect(90, 10, 171, 17))
         self.label_7.setObjectName(_fromUtf8("label_7"))
         self.label_8 = QtGui.QLabel(Dialog)
         self.label_8.setGeometry(QtCore.QRect(10, 90, 151, 31))
@@ -68,37 +59,51 @@ class Ui_Dialog(object):
         self.lineEdit_2.setGeometry(QtCore.QRect(170, 100, 113, 30))
         self.lineEdit_2.setObjectName(_fromUtf8("lineEdit_2"))
         self.lineEdit_3 = QtGui.QLineEdit(Dialog)
-        self.lineEdit_3.setGeometry(QtCore.QRect(350, 60, 113, 30))
+        self.lineEdit_3.setGeometry(QtCore.QRect(360, 60, 113, 30))
         self.lineEdit_3.setObjectName(_fromUtf8("lineEdit_3"))
         self.lineEdit_4 = QtGui.QLineEdit(Dialog)
-        self.lineEdit_4.setGeometry(QtCore.QRect(350, 100, 113, 30))
+        self.lineEdit_4.setGeometry(QtCore.QRect(360, 100, 113, 30))
         self.lineEdit_4.setObjectName(_fromUtf8("lineEdit_4"))
         self.lineEdit_5 = QtGui.QLineEdit(Dialog)
-        self.lineEdit_5.setGeometry(QtCore.QRect(470, 60, 113, 30))
+        self.lineEdit_5.setGeometry(QtCore.QRect(480, 60, 113, 30))
         self.lineEdit_5.setObjectName(_fromUtf8("lineEdit_5"))
         self.lineEdit_6 = QtGui.QLineEdit(Dialog)
-        self.lineEdit_6.setGeometry(QtCore.QRect(470, 100, 113, 30))
+        self.lineEdit_6.setGeometry(QtCore.QRect(480, 100, 113, 30))
         self.lineEdit_6.setObjectName(_fromUtf8("lineEdit_6"))
         self.line = QtGui.QFrame(Dialog)
-        self.line.setGeometry(QtCore.QRect(280, 10, 20, 131))
+        self.line.setGeometry(QtCore.QRect(280, 40, 20, 131))
         self.line.setFrameShape(QtGui.QFrame.VLine)
         self.line.setFrameShadow(QtGui.QFrame.Sunken)
         self.line.setObjectName(_fromUtf8("line"))
         self.progressBar = QtGui.QProgressBar(Dialog)
-        self.progressBar.setGeometry(QtCore.QRect(30, 180, 551, 23))
+        self.progressBar.setGeometry(QtCore.QRect(20, 190, 581, 23))
+        self.progressBar.setProperty("value", 0)
         self.progressBar.setObjectName(_fromUtf8("progressBar"))
         self.label_9 = QtGui.QLabel(Dialog)
         self.label_9.setGeometry(QtCore.QRect(10, 110, 151, 31))
         self.label_9.setObjectName(_fromUtf8("label_9"))
+        self.checkBox_2 = QtGui.QCheckBox(Dialog)
+        self.checkBox_2.setGeometry(QtCore.QRect(440, 150, 171, 22))
+        self.checkBox_2.setObjectName(_fromUtf8("checkBox_2"))
         self.textBrowser = QtGui.QTextBrowser(Dialog)
-        self.textBrowser.setGeometry(QtCore.QRect(20, 210, 361, 61))
+        self.textBrowser.setGeometry(QtCore.QRect(20, 230, 381, 51))
         self.textBrowser.setObjectName(_fromUtf8("textBrowser"))
+        self.buttonBox = QtGui.QDialogButtonBox(Dialog)
+        self.buttonBox.setGeometry(QtCore.QRect(420, 240, 181, 32))
+        self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
+        self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
+        self.buttonBox.setObjectName(_fromUtf8("buttonBox"))
+        self.pushButton = QtGui.QPushButton(Dialog)
+        self.pushButton.setGeometry(QtCore.QRect(17, 150, 251, 27))
+        self.pushButton.setObjectName(_fromUtf8("pushButton"))
 
         self.retranslateUi(Dialog)
-        QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("accepted()")), self.Forty_Three)
-        QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("rejected()")), Dialog.reject)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
+        QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("accepted()")), self.Forty_Three)
+        QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("rejected()")), Dialog.reject)
+        QtCore.QObject.connect(self.pushButton, QtCore.SIGNAL(_fromUtf8("clicked()")), self.Prochazet)
+        self.slozka = None
 
     def retranslateUi(self, Dialog):
         Dialog.setWindowTitle(_translate("Dialog", "Forty Three", None))
@@ -112,17 +117,22 @@ class Ui_Dialog(object):
         self.label_7.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:12pt; font-weight:600;\">Vstupní hodnoty</span></p></body></html>", None))
         self.label_8.setText(_translate("Dialog", "Počet cyklů při", None))
         self.lineEdit.setText(_translate("Dialog", "1", None))
-        self.lineEdit_2.setText(_translate("Dialog", "20", None))
+        self.lineEdit_2.setText(_translate("Dialog", "8", None))
         self.lineEdit_3.setText(_translate("Dialog", "1085.7", None))
         self.lineEdit_4.setText(_translate("Dialog", "2783.6", None))
         self.lineEdit_5.setText(_translate("Dialog", "510.9989", None))
         self.lineEdit_6.setText(_translate("Dialog", "1460.83", None))
         self.label_9.setText(_translate("Dialog", "vyhlazování pozadí", None))
         self.checkBox_2.setText(_translate("Dialog", "Vyhlazovat spektrum", None))
+        self.pushButton.setText(_translate("Dialog", "Vybrat složku se soubory FRK", None))
+        self.textBrowser.setText('Vyberte prosím složku se soubory FRK')
+       
+    def Prochazet(self):
+        self.slozka = QtGui.QFileDialog.getExistingDirectory()
+        self.textBrowser.setText('Byla vybrána složka %s' %(self.slozka))
         
     def Forty_Three(self):
-        
-        self.textBrowser.setText('Zpracovávám následující soubory:')
+
         ## Vstupní konstanty
         
         #sirka=1 #*** A kdyby se to celé vypočetlo pro sirka=4 nebo 5 (5 raději ne, dělá to tam bordel...), bylo by pozadí ještě hladší :)
@@ -134,8 +144,15 @@ class Ui_Dialog(object):
         cykl=int(self.lineEdit_2.text())
         config0=[self.lineEdit_3.text(),self.lineEdit_5.text()]
         config1=[self.lineEdit_4.text(),self.lineEdit_6.text()]
+        if self.slozka:
+            path0=str(self.slozka)
+        else:
+            self.textBrowser.setText('Vyberte prosím složku se soubory FRK')
+            return
+        
+        self.textBrowser.setText('Zpracovávám následující soubory:')
+        
         ## Nastavení energetické kalibrace
-        path0=os.getcwd()
         newconfig0=float(config0[1])-float(config0[0])*(float(config1[1])-float(config0[1]))/(float(config1[0])-float(config0[0]))
         newconfig1=(float(config1[1])-float(config0[1]))/(float(config1[0])-float(config0[0]))
         
@@ -143,6 +160,9 @@ class Ui_Dialog(object):
         
         os.chdir(path0)
         soubor=glob.glob(path0 + '/*.FRK')
+        if (len(soubor)<1):
+            self.textBrowser.setText('Nebyly nalezeny žádné soubory .FRK')
+            return
         plot_jmeno=[0]*len(soubor)
         plot_spektrum=[0]*len(soubor)
         plot_pozadi=[0]*len(soubor)
@@ -309,7 +329,11 @@ class Ui_Dialog(object):
             vystup = open(soubor[i1].replace(path0 + '/', '').replace('FRK','OUTpy'),'w')
             vystup.write('Vyhodnocováno skriptem: %s \n \n' %(str(os.path.basename(__file__))))
             vystup.write('Vstupní parametry: \nFaktor šířky píku = %i \n' %(sirka))
-            vystup.write('Počet iterací při vyhlazování pozadí = %i  \n \n' %(cykl))
+            vystup.write('Počet iterací při vyhlazování pozadí = %i  \n' %(cykl))
+            if vyhlazeni==0:
+                vystup.write('Spektrum nebylo vyhlazováno. \n \n')
+            else:
+                vystup.write('Spektrum bylo vyhlazováno. \n \n')
             if sys.version_info.major<3:
                 vystup.write('%s \n%s \n%s \n \n' %(Time, Treal, Tlive)) 
             else:
@@ -321,20 +345,19 @@ class Ui_Dialog(object):
             
         ## Vykreslování grafů spekter a pozadí 
         if (grafy==2):
-            self.progressBar.setProperty("value", 100)
             self.textBrowser.setText('Hotovo! Zobrazuji grafy.')
             for i12 in range (0,len(soubor)):
+                matplotlib.pyplot.ion()
                 matplotlib.pyplot.figure(i12)
                 matplotlib.pyplot.title(plot_jmeno[i12])
                 matplotlib.pyplot.xlabel('Energie (keV)')
                 matplotlib.pyplot.ylabel('Cetnost (-)')
                 matplotlib.pyplot.plot(C2, plot_spektrum[i12]) #vykreslení spektra
                 matplotlib.pyplot.plot(C2, plot_pozadi[i12], 'r') #vykreslení pozadí
-            matplotlib.pyplot.show()
-        else:
             self.progressBar.setProperty("value", 100)
+        else:
             self.textBrowser.setText('Hotovo!')
-            
+            self.progressBar.setProperty("value", 100)
   
       
         
