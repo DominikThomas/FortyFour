@@ -25,16 +25,18 @@ except AttributeError:
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName(_fromUtf8("Dialog"))
-        Dialog.resize(607, 275)
-        self.pushButton = QtGui.QPushButton(Dialog)
-        self.pushButton.setGeometry(QtCore.QRect(490, 230, 98, 27))
-        self.pushButton.setObjectName(_fromUtf8("pushButton"))
-        self.pushButton_2 = QtGui.QPushButton(Dialog)
-        self.pushButton_2.setGeometry(QtCore.QRect(390, 230, 98, 27))
-        self.pushButton_2.setObjectName(_fromUtf8("pushButton_2"))
+        Dialog.resize(607, 278)
+        self.buttonBox = QtGui.QDialogButtonBox(Dialog)
+        self.buttonBox.setGeometry(QtCore.QRect(400, 230, 181, 32))
+        self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
+        self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
+        self.buttonBox.setObjectName(_fromUtf8("buttonBox"))
         self.checkBox = QtGui.QCheckBox(Dialog)
         self.checkBox.setGeometry(QtCore.QRect(20, 150, 131, 22))
         self.checkBox.setObjectName(_fromUtf8("checkBox"))
+        self.checkBox_2 = QtGui.QCheckBox(Dialog)
+        self.checkBox_2.setGeometry(QtCore.QRect(160, 150, 171, 22))
+        self.checkBox_2.setObjectName(_fromUtf8("checkBox_2"))
         self.label = QtGui.QLabel(Dialog)
         self.label.setGeometry(QtCore.QRect(380, 40, 66, 17))
         self.label.setObjectName(_fromUtf8("label"))
@@ -83,15 +85,18 @@ class Ui_Dialog(object):
         self.line.setFrameShadow(QtGui.QFrame.Sunken)
         self.line.setObjectName(_fromUtf8("line"))
         self.progressBar = QtGui.QProgressBar(Dialog)
-        self.progressBar.setGeometry(QtCore.QRect(30, 190, 551, 23))
+        self.progressBar.setGeometry(QtCore.QRect(30, 180, 551, 23))
         self.progressBar.setObjectName(_fromUtf8("progressBar"))
         self.label_9 = QtGui.QLabel(Dialog)
         self.label_9.setGeometry(QtCore.QRect(10, 110, 151, 31))
         self.label_9.setObjectName(_fromUtf8("label_9"))
+        self.textBrowser = QtGui.QTextBrowser(Dialog)
+        self.textBrowser.setGeometry(QtCore.QRect(20, 210, 361, 61))
+        self.textBrowser.setObjectName(_fromUtf8("textBrowser"))
 
         self.retranslateUi(Dialog)
-        QtCore.QObject.connect(self.pushButton, self.Forty_Three)
-        QtCore.QObject.connect(self.pushButton_2, QtCore.SIGNAL(_fromUtf8("rejected()")), Dialog.reject)
+        QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("accepted()")), self.Forty_Three)
+        QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("rejected()")), Dialog.reject)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
 
@@ -113,15 +118,15 @@ class Ui_Dialog(object):
         self.lineEdit_5.setText(_translate("Dialog", "510.9989", None))
         self.lineEdit_6.setText(_translate("Dialog", "1460.83", None))
         self.label_9.setText(_translate("Dialog", "vyhlazování pozadí", None))
-        self.pushButton.setText(_translate("Dialog", "Spustit", None))
-        self.pushButton_2.setText(_translate("Dialog", "Ukončit", None))
-
+        self.checkBox_2.setText(_translate("Dialog", "Vyhlazovat spektrum", None))
         
     def Forty_Three(self):
+        
+        self.textBrowser.setText('Zpracovávám následující soubory:')
         ## Vstupní konstanty
         
         #sirka=1 #*** A kdyby se to celé vypočetlo pro sirka=4 nebo 5 (5 raději ne, dělá to tam bordel...), bylo by pozadí ještě hladší :)
-        vyhlazeni="NE" #zda vyhlazovat samotné spektrum
+        vyhlazeni=self.checkBox_2.checkState() #zda vyhlazovat samotné spektrum
         vaha=50 #váha prostřední hodnoty při vyhlazování spektra
         ampl=-10000 #diskriminace dle plochy píku bez pozadí, píky s plochou menší než 'ampl' nebudou vypsány ve výstupním souboru 
         grafy=self.checkBox.checkState()
@@ -141,8 +146,9 @@ class Ui_Dialog(object):
         plot_jmeno=[0]*len(soubor)
         plot_spektrum=[0]*len(soubor)
         plot_pozadi=[0]*len(soubor)
-        print ('Zpracovávám následující soubory (Celkem %i):' %(len(soubor)))
+        self.textBrowser.setText('Zpracovávám následující soubory: \n ')
         for i1 in range(0,len(soubor)): # 1): #
+            self.textBrowser.setText('Zpracovávám následující soubory: \n %s' %soubor[i1].replace(path0 + '/', ''))
             self.progressBar.setProperty("value", i1/len(soubor)*100)
             #print (i1, soubor[i1].replace(path0 + '/', ''))
             Y0=[0]*8192
@@ -150,14 +156,14 @@ class Ui_Dialog(object):
             for i2 in range(0, len(Y0)):
                 Y0[i2]=float(''.join(f1.readline().split()))
             Y=[0]*8192 #spektrum
-            if(vyhlazeni=="ANO"):
+            if(vyhlazeni==2):
                 for i3 in range(1, len(Y0)-1):
                     Y[i3]=(Y0[i3-1]+vaha*Y0[i3]+Y0[i3+1])/(2+vaha)
                 del(i3)
-            elif(vyhlazeni=="NE"):
+            elif(vyhlazeni==0):
                 Y=Y0
             else:
-                print("Chyba parametru 'vyhlazeni'. Nutno zadat ANO nebo NE")
+                print("Chyba parametru 'vyhlazeni'.")
                 break
             C2=[0]*8192 #energie
             C=[0]*8192 #kanál
@@ -316,7 +322,7 @@ class Ui_Dialog(object):
         ## Vykreslování grafů spekter a pozadí 
         if (grafy==2):
             self.progressBar.setProperty("value", 100)
-            print('Hotovo! Zobrazuji grafy.')
+            self.textBrowser.setText('Hotovo! Zobrazuji grafy.')
             for i12 in range (0,len(soubor)):
                 matplotlib.pyplot.figure(i12)
                 matplotlib.pyplot.title(plot_jmeno[i12])
@@ -327,7 +333,7 @@ class Ui_Dialog(object):
             matplotlib.pyplot.show()
         else:
             self.progressBar.setProperty("value", 100)
-            print('Hotovo!')
+            self.textBrowser.setText('Hotovo!')
             
   
       
