@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '4.ui'
+# Form implementation generated from reading ui file 'rozhrani.ui'
 #
-# Created: Wed Oct  7 17:40:19 2015
+# Created: Thu Oct  8 14:26:40 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName(_fromUtf8("Dialog"))
-        Dialog.resize(625, 295)
+        Dialog.resize(625, 325)
         self.checkBox = QtGui.QCheckBox(Dialog)
         self.checkBox.setEnabled(True)
         self.checkBox.setGeometry(QtCore.QRect(300, 150, 131, 22))
@@ -75,12 +75,12 @@ class Ui_Dialog(object):
         self.lineEdit_6.setGeometry(QtCore.QRect(480, 100, 113, 30))
         self.lineEdit_6.setObjectName(_fromUtf8("lineEdit_6"))
         self.line = QtGui.QFrame(Dialog)
-        self.line.setGeometry(QtCore.QRect(280, 40, 20, 131))
+        self.line.setGeometry(QtCore.QRect(280, 40, 20, 91))
         self.line.setFrameShape(QtGui.QFrame.VLine)
         self.line.setFrameShadow(QtGui.QFrame.Sunken)
         self.line.setObjectName(_fromUtf8("line"))
         self.progressBar = QtGui.QProgressBar(Dialog)
-        self.progressBar.setGeometry(QtCore.QRect(20, 190, 581, 23))
+        self.progressBar.setGeometry(QtCore.QRect(20, 220, 581, 23))
         self.progressBar.setProperty("value", 0)
         self.progressBar.setObjectName(_fromUtf8("progressBar"))
         self.label_9 = QtGui.QLabel(Dialog)
@@ -90,22 +90,35 @@ class Ui_Dialog(object):
         self.checkBox_2.setGeometry(QtCore.QRect(440, 150, 171, 22))
         self.checkBox_2.setObjectName(_fromUtf8("checkBox_2"))
         self.textBrowser = QtGui.QTextBrowser(Dialog)
-        self.textBrowser.setGeometry(QtCore.QRect(20, 230, 381, 51))
+        self.textBrowser.setGeometry(QtCore.QRect(20, 260, 381, 51))
         self.textBrowser.setObjectName(_fromUtf8("textBrowser"))
         self.buttonBox = QtGui.QDialogButtonBox(Dialog)
-        self.buttonBox.setGeometry(QtCore.QRect(420, 240, 181, 32))
+        self.buttonBox.setGeometry(QtCore.QRect(420, 270, 181, 32))
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
         self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
         self.buttonBox.setObjectName(_fromUtf8("buttonBox"))
         self.pushButton = QtGui.QPushButton(Dialog)
         self.pushButton.setGeometry(QtCore.QRect(17, 150, 251, 27))
         self.pushButton.setObjectName(_fromUtf8("pushButton"))
+        self.line_2 = QtGui.QFrame(Dialog)
+        self.line_2.setGeometry(QtCore.QRect(310, 130, 291, 20))
+        self.line_2.setFrameShape(QtGui.QFrame.HLine)
+        self.line_2.setFrameShadow(QtGui.QFrame.Sunken)
+        self.line_2.setObjectName(_fromUtf8("line_2"))
+        self.spinBox = QtGui.QSpinBox(Dialog)
+        self.spinBox.setGeometry(QtCore.QRect(300, 180, 60, 27))
+        self.spinBox.setMinimum(1)
+        self.spinBox.setMaximum(3)
+        self.spinBox.setObjectName(_fromUtf8("spinBox"))
+        self.label_10 = QtGui.QLabel(Dialog)
+        self.label_10.setGeometry(QtCore.QRect(370, 180, 161, 31))
+        self.label_10.setObjectName(_fromUtf8("label_10"))
 
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):
-        Dialog.setWindowTitle(_translate("Dialog", "Dialog", None))
+        Dialog.setWindowTitle(_translate("Dialog", "Forty Four", None))
         self.checkBox.setText(_translate("Dialog", "Zobrazit grafy", None))
         self.label.setText(_translate("Dialog", "Kanál", None))
         self.label_2.setText(_translate("Dialog", "Energie (keV)", None))
@@ -124,4 +137,5 @@ class Ui_Dialog(object):
         self.label_9.setText(_translate("Dialog", "vyhlazování pozadí", None))
         self.checkBox_2.setText(_translate("Dialog", "Vyhlazovat spektrum", None))
         self.pushButton.setText(_translate("Dialog", "Vybrat složku se soubory FRK", None))
+        self.label_10.setText(_translate("Dialog", "Typ výpočtu pozadí", None))
 

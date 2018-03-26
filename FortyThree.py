@@ -1,11 +1,12 @@
 import matplotlib
 matplotlib.use("Qt4Agg", force=True) #Nutno #Qt5Agg způsobuje neplynulost při procházení grafů
-import numpy as np, os, glob, sys, matplotlib.pyplot   
+import numpy as np, os, glob, sys, matplotlib.pyplot
+from PyQt4 import QtCore, QtGui
 
 class Vypocet():
    
     def Forty_Three(self):
-
+        
         ## Vstupní konstanty
         
         #sirka=1 #*** A kdyby se to celé vypočetlo pro sirka=4 nebo 5 (5 raději ne, dělá to tam bordel...), bylo by pozadí ještě hladší :)
@@ -13,6 +14,7 @@ class Vypocet():
         vaha=50 #váha prostřední hodnoty při vyhlazování spektra
         ampl=-10000 #diskriminace dle plochy píku bez pozadí, píky s plochou menší než 'ampl' nebudou vypsány ve výstupním souboru 
         grafy=self.checkBox.checkState()
+        typ_pozadi=self.spinBox.value()
         sirka=int(self.lineEdit.text())
         cykl=int(self.lineEdit_2.text())
         config0=[self.lineEdit_3.text(),self.lineEdit_5.text()]
@@ -41,7 +43,7 @@ class Vypocet():
         plot_pozadi=[0]*len(soubor)
         self.textBrowser.setText('Zpracovávám následující soubory: \n ')
         for i1 in range(0,len(soubor)): # 1): #
-            self.textBrowser.setText('Zpracovávám následující soubory: \n %s' %soubor[i1].replace(path0 + '/', ''))
+            self.textBrowser.setText('Zpracovávám následující soubory: \n%s' %soubor[i1].replace(path0 + '/', ''))
             self.progressBar.setProperty("value", i1/len(soubor)*100)
             #print (i1, soubor[i1].replace(path0 + '/', ''))
             Y0=[0]*8192
@@ -120,27 +122,34 @@ class Vypocet():
                 G21.append(sum(Y[H01[i8]:H11[i8]])) #suma píku i s pozadím
                 G22.append(H01[i8]) #levý okraj píku
                 G23.append(H11[i8]) #pravý okraj píku
-                # # #G24.append(0) #příprava na dosazení pozadí #zde se nesmí dosazovat 0, nutno, aby zůstalo prázdné
                 G25.append(len(Y[H01[i8]:H11[i8]])) #šířka píku v kanálech
             pozadi=[]
             for i9 in range (0, len(G23)):
-            #if i1==7:
-            #	print('Y, G23[i9]', len(Y), G23[i9])
                 pozadi.append(Y[G23[i9]])  
         
         ## Vyhlazování pozadí
-            
-            for i10 in range (0,cykl):
-                P0=[]
-                P0.extend(pozadi)
-                pozadi=[]
-                P1=[0.0]*len(P0)
-                P1[0]=P0[0]
-                P1[len(P0)-1]=P0[len(P0)-1]
-                for i11 in range (1,len(P0)-1):
-                    P1[i11]=min(P0[i11],np.mean([P0[i11-1],P0[i11],P0[i11+1]]))
-                pozadi.extend(P1) 
-            
+            if typ_pozadi==3:
+                for i10 in range (0,cykl):
+                    P0=[]
+                    P0.extend(pozadi)
+                    pozadi=[]
+                    P1=[0.0]*len(P0)
+                    P1[0]=P0[0]
+                    P1[len(P0)-1]=P0[len(P0)-1]
+                    for i11 in range (1,len(P0)-1):
+                        P1[i11]=np.mean([P0[i11-1],P0[i11],P0[i11+1]])
+                    pozadi.extend(P1) 
+            else:
+                for i10 in range (0,cykl):
+                    P0=[]
+                    P0.extend(pozadi)
+                    pozadi=[]
+                    P1=[0.0]*len(P0)
+                    P1[0]=P0[0]
+                    P1[len(P0)-1]=P0[len(P0)-1]
+                    for i11 in range (1,len(P0)-1):
+                        P1[i11]=min(P0[i11],np.mean([P0[i11-1],P0[i11],P0[i11+1]]))
+                    pozadi.extend(P1) 
             
             PP=[0.0]*len(C2)
             for i9e in range (0,len(G23)-1):
@@ -156,11 +165,17 @@ class Vypocet():
                 P1=[0.0]*len(P0)
                 P1[0:5]=P0[0:5]
                 P1[(len(P0)-6):(len(P0)-1)]=P0[(len(P0)-6):(len(P0)-1)]
-                for i11 in range (5,len(P0)-6):
-                    if (i10<(cykl)):
-                        P1[i11]=min(Y[i11],np.mean([P0[i11-5],P0[i11-4],P0[i11-3],P0[i11-2],P0[i11-1],P0[i11],P0[i11+1],P0[i11+2],P0[i11+3],P0[i11+4],P0[i11+5]]))
-                    else:
+                if typ_pozadi==1:
+                    for i11 in range (5,len(P0)-6):
+                        if (i10<(cykl)):
+                            P1[i11]=min(Y[i11],np.mean([P0[i11-5],P0[i11-4],P0[i11-3],P0[i11-2],P0[i11-1],P0[i11],P0[i11+1],P0[i11+2],P0[i11+3],P0[i11+4],P0[i11+5]]))
+                        else:
+                            P1[i11]=np.mean([P0[i11-5],P0[i11-4],P0[i11-3],P0[i11-2],P0[i11-1],P0[i11],P0[i11+1],P0[i11+2],P0[i11+3],P0[i11+4],P0[i11+5]])
+                elif typ_pozadi==2 or typ_pozadi==3:
+                    for i11 in range (5,len(P0)-6):
                         P1[i11]=np.mean([P0[i11-5],P0[i11-4],P0[i11-3],P0[i11-2],P0[i11-1],P0[i11],P0[i11+1],P0[i11+2],P0[i11+3],P0[i11+4],P0[i11+5]])
+                else:
+                    self.textBrowser.setText('Chyba načtení typu pozadí.')
                 PP.extend(P1)    
             for i10a in range (0,len(G23)):
                 G24.append(PP[G23[i10a]])    
@@ -203,6 +218,7 @@ class Vypocet():
             vystup.write('Vyhodnocováno skriptem: %s \n \n' %(str(os.path.basename(__file__))))
             vystup.write('Vstupní parametry: \nFaktor šířky píku = %i \n' %(sirka))
             vystup.write('Počet iterací při vyhlazování pozadí = %i  \n' %(cykl))
+            vystup.write('Byl použit %i. typ vyhlazování pozadí. \n' %(typ_pozadi))
             if vyhlazeni==0:
                 vystup.write('Spektrum nebylo vyhlazováno. \n \n')
             else:
@@ -215,6 +231,7 @@ class Vypocet():
             for i in range (0,len(G20)):
                 vystup.write('%13f            %14f \n' % (G20[i], G26[i]) )
             vystup.close
+            QtGui.QApplication.processEvents() #Obnovení okna aplikace na konci každého výpočetního cyklu
             
         ## Vykreslování grafů spekter a pozadí 
         if (grafy==2):
