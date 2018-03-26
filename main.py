@@ -1,5 +1,7 @@
+# -*- coding: utf-8 -*-
+
 from PyQt4 import QtCore, QtGui 
-import sys
+import sys, sip, matplotlib
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8

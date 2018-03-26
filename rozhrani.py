@@ -168,7 +168,6 @@ class Ui_Dialog(object):
         self.spinBox.setFont(font)
         self.spinBox.setMinimum(1)
         self.spinBox.setMaximum(3)
-        self.spinBox.setProperty("value", 2)
         self.spinBox.setObjectName(_fromUtf8("spinBox"))
         self.label_10 = QtGui.QLabel(Dialog)
         self.label_10.setGeometry(QtCore.QRect(370, 180, 161, 31))

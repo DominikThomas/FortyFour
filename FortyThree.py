@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import matplotlib
 matplotlib.use("Qt4Agg", force=True) #Nutno #Qt5Agg způsobuje neplynulost při procházení grafů
 import numpy as np, os, glob, sys, matplotlib.pyplot
