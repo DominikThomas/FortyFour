@@ -1,1 +1,2 @@
-pythonw ./main.py
+cd Python
+python.exe ..\main.py
