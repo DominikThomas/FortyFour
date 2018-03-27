@@ -1,4 +1,4 @@
-Vyhodnocováno skriptem: FortyThree.py 
+Vyhodnocováno skriptem: FortyThree.pyc 
  
 Vstupní parametry: 
 Faktor šířky píku = 1 
@@ -6,9 +6,9 @@ Pocet iterací při vyhlazování pozadí = 15
 Byl použit 2. typ vyhlazování pozadí. 
 Spektrum nebylo vyhlazováno. 
  
-Start date: 24.03.2014 17:52:02
-Real time: 60143 sec
-Live time: 59863 sec
+Start date: 24.03.2014 17:52:02 
+Real time: 60143 
+Live time: 59863 
  
 Energie (keV)                Plocha (-)                Reakce                   Intenzita(%)                 Isotop                    Poločas (s)
     56.362152             106984.851302               (n,3He)                       0.8000                     167Ho                   11160.0 

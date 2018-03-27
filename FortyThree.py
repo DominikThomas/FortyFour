@@ -14,6 +14,7 @@ class Vypocet():
    
     def Forty_Three(self):
         t = time.time()
+        
         ## Vstupní konstanty
         
         vyhlazeni=self.checkBox_2.checkState() #zda vyhlazovat samotné spektrum
@@ -34,6 +35,7 @@ class Vypocet():
         self.textBrowser.setText(u'Zpracovávám následující soubory:')
         
         ## Nastavení energetické kalibrace
+        
         newconfig0=float(config0[1])-float(config0[0])*(float(config1[1])-float(config0[1]))/(float(config1[0])-float(config0[0]))
         newconfig1=(float(config1[1])-float(config0[1]))/(float(config1[0])-float(config0[0]))
         
@@ -57,88 +59,94 @@ class Vypocet():
                 self.textBrowser.setText(u'Zpracovávám následující soubory: \n%s' %soubor[i1].replace(path0 + '/', ''))
             self.progressBar.setProperty("value", i1/len(soubor)*100)
             #print (i1, soubor[i1].replace(path0 + '/', ''))
-            Y0=[0]*8192
+            Y0=[0]*sum(1 for line in open(soubor[i1])) #délka souboru FRK
             f1=open(soubor[i1])
             for i2 in range(0, len(Y0)):
                 Y0[i2]=float(''.join(f1.readline().split()))
-            Y=[0]*8192 #spektrum
+            spektrum={}
+            spektrum['cetnost']=[]
+            # Y=[0]*8192 == spektrum['cetnost']
             if(vyhlazeni==2):
                 for i3 in range(1, len(Y0)-1):
-                    Y[i3]=(Y0[i3-1]+vaha*Y0[i3]+Y0[i3+1])/(2+vaha)
+                    spektrum['cetnost'].append(0)
+                    spektrum['cetnost'][i3]=(Y0[i3-1]+vaha*Y0[i3]+Y0[i3+1])/(2+vaha)
+                    spektrum['cetnost'].append(0)
                 del(i3)
             elif(vyhlazeni==0):
-                Y=Y0
+                spektrum['cetnost']=Y0
             else:
                 print(u"Chyba parametru 'vyhlazeni'.")
                 break
-            C2=[0]*8192 #energie
-            C=[0]*8192 #kanál
-            Z=[0]*8192 #derivace spektra
-            C[0]=1
-            C2[0]=newconfig0+newconfig1
-            for i4 in range(1, len(C2)):
-                C[i4]=i4+1
-                C2[i4]=newconfig0+(i4+1)*newconfig1
-                Z[i4]=Y[i4]-Y[i4-1]
-            G0=[] #kanál přibližného středu píku (derivace mění znaménko)
-            G1=[] #energie přibližného středu píku (derivace mění znaménko)
-            H0=[] #levé okraje píků
-            H1=[] #pravé okraje píků
-            for i5 in range(0, len(Z)-sirka):
-                if(Z[i5+sirka]<0):
-                    G0.append(C[i5])
-                    G1.append(C2[i5])
-            for i6 in range(0, len(G0)-sirka):
+            spektrum['kanal']=[1] #C=[0]*8192 #kanál
+            spektrum['energie']=[newconfig0+newconfig1] #C2=[0]*8192 #energie
+            spektrum['derivace']=[0] #Z=[0]*8192 #derivace spektra
+            for i4 in range(1, len(Y0)):
+                spektrum['kanal'].append(i4+1)
+                spektrum['energie'].append(newconfig0+(i4+1)*newconfig1)
+                spektrum['derivace'].append(spektrum['cetnost'][i4]-spektrum['cetnost'][i4-1])
+            piky0={}
+            piky0['kanal']=[] #G0=[] #kanál přibližného středu píku (derivace mění znaménko)
+            piky0['energie']=[] #G1=[] #energie přibližného středu píku (derivace mění znaménko)
+            piky0['levy']=[] #H0=[] #levé okraje píků
+            piky0['pravy']=[] #H1=[] #pravé okraje píků
+            for i5 in range(0, len(spektrum['derivace'])-sirka):
+                if(spektrum['derivace'][i5+sirka]<0):
+                    piky0['kanal'].append(spektrum['kanal'][i5])
+                    piky0['energie'].append(spektrum['energie'][i5])
+            for i6 in range(0, len(piky0['kanal'])-sirka):
                 if (i6==0):
-                    l11=G0[i6]
+                    l11=piky0['kanal'][i6]
                     l12=0
-                l1=max(G0[i6],l12+1)
+                l1=max(piky0['kanal'][i6],l12+1)
                 l2=max(l1+sirka,l11)
-                if (l1>len(Z) or l2>len(Z)):
+                if (l1>len(spektrum['derivace']) or l2>len(spektrum['derivace'])):
                     break
                 while True:
                     l1-=1
-                    if(l1==0 or l1==l12-1 or Z[max(l1,1)]<-0.1):
+                    if(l1==0 or l1==l12-1 or spektrum['derivace'][max(l1,1)]<-0.1):
                         break
                 if l1==0:
                     l1=1
-                H0.append(l1)
-                if(l2<len(C2)):
+                piky0['levy'].append(l1)
+                if(l2<len(spektrum['energie'])):
                     while True:
                         l2+=1
-                        if(l2==(len(C2)-1) or l2>=len(C2) or Z[l2]>0.1):
+                        if(l2==(len(spektrum['energie'])-1) or l2>=len(spektrum['energie']) or spektrum['derivace'][l2]>0.1):
                             break
-                    H1.append(l2-1)
+                    piky0['pravy'].append(l2-1)
                 else:
-                    H1.append(l2-2)
+                    piky0['pravy'].append(l2-2)
                 l11=l1
                 l12=l2
-            del l1, l2, l12, l11
-            H01=[H0[0]]
-            H11=[H1[0]]
-            for i7 in range (1, len(H0)): #odstranění duplicitních píků
-                if (H0[i7-1],H1[i7-1])!=(H0[i7],H1[i7]):
-                    H01.append(H0[i7])
-                    H11.append(H1[i7])
-            G20=[] #energie maxima píku
-            G21=[] #suma píku i s pozadím
-            G22=[] #levý okraj píku
-            G23=[] #pravý okraj píku
-            G24=[] #pozadí
-            G25=[] #šířka píku v kanálech
-            G26=[] #plocha píku bez pozadí
-            for i8 in range (0,len(H01)):
-                maximum, index = max((val, idx) for idx, val in enumerate(Y[H01[i8]:H11[i8]]))
-                G20.append(C2[H01[i8]+index]) #energie maxima píku
-                G21.append(sum(Y[H01[i8]:H11[i8]])) #suma píku i s pozadím
-                G22.append(H01[i8]) #levý okraj píku
-                G23.append(H11[i8]) #pravý okraj píku
-                G25.append(len(Y[H01[i8]:H11[i8]])) #šířka píku v kanálech
+            # del l1, l2, l12, l11
+            piky1={}
+            piky1['levy']=[piky0['levy'][0]] #H01
+            piky1['pravy']=[piky0['pravy'][0]] #H11
+            for i7 in range (1, len(piky0['levy'])): #odstranění duplicitních píků
+                if (piky0['levy'][i7-1],piky0['pravy'][i7-1])!=(piky0['levy'][i7],piky0['pravy'][i7]):
+                    piky1['levy'].append(piky0['levy'][i7])
+                    piky1['pravy'].append(piky0['pravy'][i7])
+            piky={}
+            piky['energie']=[] # G20=[] #energie maxima píku
+            piky['suma']=[] #G21=[] #suma píku i s pozadím
+            piky['levy']=[] #G22=[] #levý okraj píku
+            piky['pravy']=[] #G23=[] #pravý okraj píku
+            piky['pozadi']=[] #G24=[] #pozadí
+            piky['sirka']=[] #G25=[] #šířka píku v kanálech
+            piky['plocha']=[] #G26=[] #plocha píku bez pozadí
+            for i8 in range (0,len(piky1['levy'])):
+                maximum, index = max((val, idx) for idx, val in enumerate(spektrum['cetnost'][piky1['levy'][i8]:piky1['pravy'][i8]]))
+                piky['energie'].append(spektrum['energie'][piky1['levy'][i8]+index]) #energie maxima píku
+                piky['suma'].append(sum(spektrum['cetnost'][piky1['levy'][i8]:piky1['pravy'][i8]])) #suma píku i s pozadím
+                piky['levy'].append(piky1['levy'][i8]) #levý okraj píku
+                piky['pravy'].append(piky1['pravy'][i8]) #pravý okraj píku
+                piky['sirka'].append(len(spektrum['cetnost'][piky1['levy'][i8]:piky1['pravy'][i8]])) #šířka píku v kanálech
             pozadi=[]
-            for i9 in range (0, len(G23)):
-                pozadi.append(Y[G23[i9]])  
+            for i9 in range (0, len(piky['pravy'])):
+                pozadi.append(spektrum['cetnost'][piky['pravy'][i9]])  
         
         ## Vyhlazování pozadí
+        
             if typ_pozadi==3:
                 for i10 in range (0,cykl):
                     QtGui.QApplication.processEvents() #Obnovení okna aplikace na konci každého výpočetního cyklu
@@ -164,13 +172,13 @@ class Vypocet():
                         P1[i11]=min(P0[i11],mean([P0[i11-1],P0[i11],P0[i11+1]]))
                     pozadi.extend(P1) 
             
-            PP=[0.0]*len(C2)
-            for i9e in range (0,len(G23)-1):
+            PP=[0.0]*len(spektrum['energie'])
+            for i9e in range (0,len(piky['pravy'])-1):
                 QtGui.QApplication.processEvents() #Obnovení okna aplikace na konci každého výpočetního cyklu
-                PP[G23[i9e]]=pozadi[i9e]
-                inkrement=(pozadi[i9e+1]-pozadi[i9e])/(G23[i9e+1]-G23[i9e])
-                for i9f in range (0,(G23[i9e+1]-G23[i9e])):
-                    PP[G23[i9e]+i9f]=PP[G23[i9e]]+i9f*inkrement
+                PP[piky['pravy'][i9e]]=pozadi[i9e]
+                inkrement=(pozadi[i9e+1]-pozadi[i9e])/(piky['pravy'][i9e+1]-piky['pravy'][i9e])
+                for i9f in range (0,(piky['pravy'][i9e+1]-piky['pravy'][i9e])):
+                    PP[piky['pravy'][i9e]+i9f]=PP[piky['pravy'][i9e]]+i9f*inkrement
         
             for i10 in range (0,int(cykl/4)):
                 QtGui.QApplication.processEvents() #Obnovení okna aplikace na konci každého výpočetního cyklu
@@ -192,18 +200,18 @@ class Vypocet():
                 else:
                     self.textBrowser.setText('Chyba načtení typu pozadí.')
                 PP.extend(P1)    
-            for i10a in range (0,len(G23)):
-                G24.append(PP[G23[i10a]])    
+            for i10a in range (0,len(piky['pravy'])):
+                piky['pozadi'].append(PP[piky['pravy'][i10a]])    
             
-            G26.append(G21[0]-(Y[G22[0]]/2+G24[0]/2)*G25[0])
-            for i9b in range(1,len(G25)):
-                G26.append(G21[i9b]-sum(PP[G22[i9b]:G23[i9b]]))
+            piky['plocha'].append(piky['suma'][0]-(spektrum['cetnost'][piky['levy'][0]]/2+piky['pozadi'][0]/2)*piky['sirka'][0])
+            for i9b in range(1,len(piky['sirka'])):
+                piky['plocha'].append(piky['suma'][i9b]-sum(PP[piky['levy'][i9b]:piky['pravy'][i9b]]))
                 
-            for i9c in range(0,len(G26)):
-                if G26[i9c]<ampl:
-                    G20[i9c]=[];G21[i9c]=[];G22[i9c]=[];G23[i9c]=[];G24[i9c]=[];G25[i9c]=[];G26[i9c]=[]
-            for i9d in range(0,G20.count([])):
-                G20.remove([]);G21.remove([]);G22.remove([]);G23.remove([]);G24.remove([]);G25.remove([]);G26.remove([])
+            for i9c in range(0,len(piky['plocha'])):
+                if piky['plocha'][i9c]<ampl:
+                    piky['energie'][i9c]=[];piky['suma'][i9c]=[];piky['levy'][i9c]=[];piky['pravy'][i9c]=[];piky['pozadi'][i9c]=[];piky['sirka'][i9c]=[];piky['plocha'][i9c]=[]
+            for i9d in range(0,piky['energie'].count([])):
+                piky['energie'].remove([]);piky['suma'].remove([]);piky['levy'].remove([]);piky['pravy'].remove([]);piky['pozadi'].remove([]);piky['sirka'].remove([]);piky['plocha'].remove([])
                 
         ## Uložení spektra a pozadí
             
@@ -211,7 +219,7 @@ class Vypocet():
                 plot_jmeno[i1]=os.path.basename(soubor[i1]).replace('.FRK','')
             else:
                 plot_jmeno[i1]=soubor[i1].replace(path0 + '/' , '').replace('.FRK','')
-            plot_spektrum[i1]=Y
+            plot_spektrum[i1]=spektrum['cetnost']
             plot_pozadi[i1]=PP
             
         ## Načtení hodnot tlive treal a data ze souboru txt     
@@ -231,18 +239,19 @@ class Vypocet():
                     f2.readline()
                     
         ## Určení prvku a odhadnutí produkční reakce pro jednotlivé píky
+        
             if system()=='Windows': prvek0 = os.path.basename(soubor[i1]).replace('.FRK','')
             else: prvek0 = (soubor[i1].replace(path0 + '/', '').replace('.FRK',''))
             prvek1 = ''.join([i for i in prvek0 if not i.isdigit()])           
             if prvek1[len(prvek1)-1]==('P' or 'p'):
                 prvek1=prvek1[0:len(prvek1)-1]
             
-            G30=['  -  ']*len(G20) #reakce
-            G33=['   -   ']*len(G20) #isotop
-            G31=['   -   ']*len(G20) #isotop
-            G32=[' - ']*len(G20) #poločas
+            piky['reakce']=['  -  ']*len(piky['energie']) #reakce G30
+            piky['intensita']=['   -   ']*len(piky['energie']) #intensita G33
+            piky['isotop']=['   -   ']*len(piky['energie']) #isotop G31
+            piky['polocas']=[' - ']*len(piky['energie']) #poločas G32
             
-            from Au_Gama import Gama_Au
+            from Au_Gama import Gama_Au #To je super!!!
             from Tm_Gama import Gama_Tm
             n=0
             GAMA=[]
@@ -254,30 +263,16 @@ class Vypocet():
             
             if len(GAMA)>1:
                 n3=3
-                for n1 in range (0, len(G20)):
+                for n1 in range (0, len(piky['energie'])):
                     for n2 in range (n3,len(GAMA)):
-                        # print(GAMA[n2-1])
-                        # print(len(GAMA[n2]), 9, len(G30), n1)
-                        # print((GAMA[n2]) , G20[n1])
-                        # print(type(GAMA[n2]))
-                        # fg
-                        #try:
-                        if ((float(GAMA[n2][9])-1) <= G20[n1] <= (float(GAMA[n2][9])+1)):
-                            G30[n1]=GAMA[n2][1].replace('>',',')
+                        if ((float(GAMA[n2][9])-1) <= piky['energie'][n1] <= (float(GAMA[n2][9])+1)):
+                            piky['reakce'][n1]=GAMA[n2][1].replace('>',',')
                             if len(GAMA[n2])>11:
-                                G33[n1]=GAMA[n2][11]
-                            G31[n1]=GAMA[n2][3]
-                            G32[n1]=float(GAMA[n2][5])
+                                piky['intensita'][n1]=GAMA[n2][11]
+                            piky['isotop'][n1]=GAMA[n2][3]
+                            piky['polocas'][n1]=float(GAMA[n2][5])
                             n3=max(3,n2-5)
                             break
-                        # except IndexError:
-                        #     print(len(GAMA[n2]), 9, len(G20), n1)
-                        #     
-                           # ?? možná nastavit, aby další cyklus běžel od hodnoty GAMA[n2][9]
-                            
-                    
-                # print(GAMA[0][3])
-            
                 
         ## Zapisování dat do souboru
             
@@ -297,18 +292,19 @@ class Vypocet():
             else:
                 vystup.write('%s%s%s \n' %(Time, Treal, Tlive))
             vystup.write('Energie (keV)                Plocha (-)                Reakce                   Intenzita(%)                 Isotop                    Poločas (s)\n')
-            for i in range (0,len(G20)):
+            for i in range (0,len(piky['energie'])):
                 try:
-                    vystup.write('%13f            %14f     %17s            %17.4f            %14s            %14s \n' % (G20[i], G26[i], G30[i], float(G33[i]), G31[i], str(G32[i])) )
+                    vystup.write('%13f            %14f     %17s            %17.4f            %14s            %14s \n' % (piky['energie'][i], piky['plocha'][i], piky['reakce'][i], float(piky['intensita'][i]), piky['isotop'][i], str(piky['polocas'][i])) )
                 except ValueError:
-                    vystup.write('%13f            %14f     %17s            %17s            %14s            %14s \n' % (G20[i], G26[i], G30[i], G33[i], G31[i], str(G32[i])) )
-            vystup.close()
+                    vystup.write('%13f            %14f     %17s            %17s            %14s            %14s \n' % (piky['energie'][i], piky['plocha'][i], piky['reakce'][i], piky['intensita'][i], piky['isotop'][i], str(piky['polocas'][i])) )
+            vystup.close
             os.chdir(path0)
             QtGui.QApplication.processEvents() #Obnovení okna aplikace na konci každého výpočetního cyklu
-            
-    
+            # print(len(spektrum['kanal']),len(spektrum['energie']),len(spektrum['derivace']),len(piky0),len(piky1))
+            # breakfast=input()
             
         ## Vykreslování grafů spekter a pozadí 
+        
         if (grafy==2):
             self.textBrowser.setText(u'Hotovo! Zobrazuji grafy.')
             for i12 in range (0,len(soubor)):
@@ -317,10 +313,11 @@ class Vypocet():
                 plt.title(plot_jmeno[i12])
                 plt.xlabel(u'Energie (keV)')
                 plt.ylabel(u'Četnost (-)')
-                plt.plot(C2, plot_spektrum[i12]) #vykreslení spektra
-                plt.plot(C2, plot_pozadi[i12], 'r') #vykreslení pozadí
+                plt.plot(spektrum['energie'], plot_spektrum[i12]) #vykreslení spektra
+                plt.plot(spektrum['energie'], plot_pozadi[i12], 'r') #vykreslení pozadí
             self.progressBar.setProperty("value", 100)
         else:
             self.textBrowser.setText(u'Hotovo!')
             self.progressBar.setProperty("value", 100)
         print(time.time()-t)
+        
