@@ -34,9 +34,6 @@ class Vypocet():
         else:
             self.textBrowser.setText(u'Vyberte prosím složku se soubory FRK')
             return
-            
-        # print(grafy,typ_pozadi,sirka,cykl,config0,config1,self.__dict__)
-        # time.sleep(100)
         
         # self.textBrowser.append(u'Zpracovávám následující soubory:')
         
@@ -300,12 +297,7 @@ class Vypocet():
             else:
                 vystup.write('%s%s%s \n' %(Time, Treal, Tlive))
             vystup.write('Energie (keV)                Plocha (-)                Reakce                   Intenzita(%)                 Isotop                    Poločas (s)\n')
-            
-            original_list = list(piky['isotop'])
-            sorted_list = sorted(range(len(original_list)), key=lambda k: original_list[k])
-            desired_list = list(reversed(sorted_list))
-            
-            for i in desired_list:
+            for i in range (0,len(piky['energie'])):
                 try:
                     vystup.write('%13f            %14f     %17s            %17.4f            %14s            %14s \n' % (piky['energie'][i], piky['plocha'][i], piky['reakce'][i], float(piky['intensita'][i]), piky['isotop'][i], str(piky['polocas'][i])) )
                 except ValueError:
