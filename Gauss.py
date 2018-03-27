@@ -5,14 +5,18 @@ import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 from scipy import asarray as ar,exp, sqrt, mean
 
+from joblib import Parallel, delayed, cpu_count
+
 t=time.time()
 
 path = '/home/dominik/Dokumenty/Python/FortyFour/FortyFour26/ORTEC'
 
 soubor = glob(path+ '/*.FRK')
 
-for i12 in range(0,len(soubor)):
+list1 = list(range(0,len(soubor)))
 
+def vykresleni_gause(i12):
+    print('Vyhodnocuji %i' %i12)
     
     plot_jmeno=[0]*len(soubor)
     plot_spektrum=[0]*len(soubor)
@@ -212,41 +216,41 @@ for i12 in range(0,len(soubor)):
         return a*exp(-(x-x0)**2/(2*sigma**2))
     
     pocet=['nic']*35
-    for i3 in range(1,30):
-        pocet0=0
-        for j in range(len(piky['levy'])): #range(120,136): #
-            
-            x = ar(spektrum['energie'][piky['levy'][j]:piky['pravy'][j]])
-            y = ar(BezPozadi[piky['levy'][j]:piky['pravy'][j]]) #ar(spektrum['cetnost'][piky['levy'][j]:piky['pravy'][j]])
-            
-            n = len(x)                          #the number of data
-            g_mean = sum(x*y)/n                   #note this correction
-            
+
+    pocet0=0
+    for j in range(len(piky['levy'])): #range(120,136): #
         
-            sigma = sqrt(sum(y*(x-g_mean)**2)/n)/i3 #sum(y*(x-mean)**2)/n        #note this correction
+        x = ar(spektrum['energie'][piky['levy'][j]:piky['pravy'][j]])
+        y = ar(BezPozadi[piky['levy'][j]:piky['pravy'][j]]) #ar(spektrum['cetnost'][piky['levy'][j]:piky['pravy'][j]])
+        
+        n = len(x)                          #the number of data
+        g_mean = sum(x*y)/n                   #note this correction
+        
+    
+        sigma = sqrt(sum(y*(x-g_mean)**2)/n)/15 #sum(y*(x-mean)**2)/n        #note this correction
+        
+        
+        
+        try:
+            popt,pcov = curve_fit(gaus,x,y,p0=[max(y),g_mean,sigma])
+        except RuntimeError:
+            nic=0
+        else:
+            # print(abs(gaus(x,*popt).max()-gaus(x,*popt).mean()))
+            # if True: #abs(gaus(x,*popt).max()-gaus(x,*popt).mean())>1.0e-2:
+            #     plt.ion()
+            #     plt.figure(j)
+            #     plt.plot(x,y,'b+:',label='data')
+            #     plt.plot(x,gaus(x,*popt),'ro:',label='fit')
+            #     plt.legend()
+            #     plt.title(u'Pík %i'%j)
+            #     plt.xlabel('Time (s)')
+            #     plt.ylabel('Voltage (V)')
+            #     plt.show()
             
-            
-            
-            try:
-                popt,pcov = curve_fit(gaus,x,y,p0=[max(y),g_mean,sigma])
-            except RuntimeError:
-                nic=0
-            else:
-                # print(abs(gaus(x,*popt).max()-gaus(x,*popt).mean()))
-                # if True: #abs(gaus(x,*popt).max()-gaus(x,*popt).mean())>1.0e-2:
-                #     plt.ion()
-                #     plt.figure(j)
-                #     plt.plot(x,y,'b+:',label='data')
-                #     plt.plot(x,gaus(x,*popt),'ro:',label='fit')
-                #     plt.legend()
-                #     plt.title(u'Pík %i'%j)
-                #     plt.xlabel('Time (s)')
-                #     plt.ylabel('Voltage (V)')
-                #     plt.show()
-                
-                if abs(gaus(x,*popt).max()-gaus(x,*popt).mean())>1.0e-2:
-                    pocet0+=1
-        pocet[i3]=[i3,pocet0]
+            if abs(gaus(x,*popt).max()-gaus(x,*popt).mean())>1.0e-2:
+                pocet0+=1
+    
     
     x1=[]
     y1=[]
@@ -255,14 +259,16 @@ for i12 in range(0,len(soubor)):
             x1.append(pocet[i25][0])
             y1.append(pocet[i25][1])
     
-    plt.ion()
-    plt.figure(i12)
-    plt.plot(x1,y1,'b+:',label='data')
-    plt.title(u'Závislost počtu konvergentních gaussů na koeficientu, kterým je dělena sigma')
-    plt.xlabel('-')
-    plt.ylabel('-')
+    # plt.ion()
+    # plt.figure(i12)
+    # plt.plot(x1,y1,'b+:',label='data')
+    # plt.title(u'Závislost počtu konvergentních gaussů na koeficientu, kterým je dělena sigma')
+    # plt.xlabel('-')
+    # plt.ylabel('-')
     # plt.show()
             # nic=input('nic')
         
+        
+Parallel(n_jobs=cpu_count())(delayed(vykresleni_gause)(input) for input in list1)
     
 print(time.time()-t)
