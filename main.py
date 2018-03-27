@@ -73,11 +73,6 @@ class FortyFour(QtGui.QMainWindow, rozhrani.Ui_Dialog, FortyThree.Vypocet):
             self.ampl1=-10000
         self.Forty_Three()
         
-        #app.exec_()
-        # nastav.raise_()
-        # nastav.activateWindow()
-        # print(1)
-        
 class Nastaveni(QtGui.QMainWindow, nastaveni.Ui_Dialog):
     def __init__(self):
         super(self.__class__, self).__init__()
@@ -95,15 +90,11 @@ class Nastaveni(QtGui.QMainWindow, nastaveni.Ui_Dialog):
         ampl0=int(self.lineEdit_8.text())
         self.close()
         
-
-    
-        
 def main():
     app = QtGui.QApplication(sys.argv)  
     form = FortyFour()                
     form.show()
     app.exec_()
-
 
 if __name__ == '__main__':              
     main()                           

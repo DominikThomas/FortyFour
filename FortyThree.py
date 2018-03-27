@@ -238,27 +238,19 @@ class Vypocet():
                 prvek1=prvek1[0:len(prvek1)-1]
             
             G30=['  -  ']*len(G20) #reakce
+            G33=['   -   ']*len(G20) #isotop
             G31=['   -   ']*len(G20) #isotop
             G32=[' - ']*len(G20) #poločas
             
-            import csv
+            from Au_Gama import Gama_Au
+            from Tm_Gama import Gama_Tm
             n=0
             GAMA=[]
             
             if prvek1 == ('TM' or 'tm' or 'Tm'):
-                with open(self.exepath + '/Tm.csv', newline='') as csvfile:
-                    gamasoubor = csv.reader(csvfile, delimiter=',', quotechar='|')
-                    for radek in gamasoubor:
-                        if n>3:
-                            GAMA.append(' '.join(radek).split())
-                        n+=1
+                GAMA=Gama_Tm
             elif prvek1 == ('AU' or 'au' or 'Au'):
-                with open(self.exepath + '/Au.csv', newline='') as csvfile:
-                    gamasoubor = csv.reader(csvfile, delimiter=',', quotechar='|')
-                    for radek in gamasoubor:
-                        if n>3:
-                            GAMA.append(' '.join(radek).split())
-                        n+=1
+                GAMA=Gama_Au
             
             if len(GAMA)>1:
                 n3=3
@@ -272,6 +264,8 @@ class Vypocet():
                         #try:
                         if ((float(GAMA[n2][9])-1) <= G20[n1] <= (float(GAMA[n2][9])+1)):
                             G30[n1]=GAMA[n2][1].replace('>',',')
+                            if len(GAMA[n2])>11:
+                                G33[n1]=GAMA[n2][11]
                             G31[n1]=GAMA[n2][3]
                             G32[n1]=float(GAMA[n2][5])
                             n3=max(3,n2-5)
@@ -302,10 +296,13 @@ class Vypocet():
                 vystup.write('%s \n%s \n%s \n \n' %(Time, Treal, Tlive)) 
             else:
                 vystup.write('%s%s%s \n' %(Time, Treal, Tlive))
-            vystup.write('Energie (keV)                Plocha (-)                Reakce                   Isotop                    Poločas (s)\n')
+            vystup.write('Energie (keV)                Plocha (-)                Reakce                   Intenzita(%)                 Isotop                    Poločas (s)\n')
             for i in range (0,len(G20)):
-                vystup.write('%13f            %14f     %17s            %14s            %14s \n' % (G20[i], G26[i], G30[i], G31[i], str(G32[i])) )
-            vystup.close
+                try:
+                    vystup.write('%13f            %14f     %17s            %17.4f            %14s            %14s \n' % (G20[i], G26[i], G30[i], float(G33[i]), G31[i], str(G32[i])) )
+                except ValueError:
+                    vystup.write('%13f            %14f     %17s            %17s            %14s            %14s \n' % (G20[i], G26[i], G30[i], G33[i], G31[i], str(G32[i])) )
+            vystup.close()
             os.chdir(path0)
             QtGui.QApplication.processEvents() #Obnovení okna aplikace na konci každého výpočetního cyklu
             
