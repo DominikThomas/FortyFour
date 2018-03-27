@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from PyQt4 import QtCore, QtGui 
-import sys, sip, matplotlib
+import sys, io, sip #, matplotlib
+
 if sys.version_info.major<3:
     reload(sys)
     sys.setdefaultencoding('UTF8')
@@ -40,7 +41,7 @@ class FortyFour(QtGui.QMainWindow, rozhrani.Ui_Dialog, FortyThree.Vypocet):
     def konfigurace(self):
         self.cfgname = QtGui.QFileDialog.getOpenFileName(None,(u"Vyberte konfigurační soubor cfg"),"./",("Konfigurační soubory (*.CFG *.Cfg *.cfg)"))
         if self.cfgname != '': self.textBrowser.setText('Byl vybrán konfigurační soubor %s' %(self.cfgname))
-        f0=open(self.cfgname)
+        f0=io.open(self.cfgname)
         for i0 in range(0, 20):
             if i0==12:
                 config0=(f0.readline().split())

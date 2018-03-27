@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['main.py'],
-             pathex=['C:\\FortyFour15'],
+             pathex=['C:\\Python\\FortyFour\\FortyFour16'],
              binaries=None,
              datas=None,
              hiddenimports=[],
@@ -25,4 +25,4 @@ exe = EXE(pyz,
           debug=False,
           strip=None,
           upx=True,
-          console=False )
+          console=False , icon='Ikona.ico')

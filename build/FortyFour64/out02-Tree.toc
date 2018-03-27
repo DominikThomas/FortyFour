@@ -1,6 +1,6 @@
 ('c:\\python34\\lib\\site-packages\\matplotlib-1.4.3-py3.4-win-amd64.egg',
  None,
- {'*.py', 'EGG-INFO', '*.so', '*.pyo', '*.pyd', '*.pyc'},
+ {'*.py', '*.pyd', '*.pyc', 'EGG-INFO', '*.so', '*.pyo'},
  [('matplotlib-1.4.3-py3.4-nspkg.pth',
    'c:\\python34\\lib\\site-packages\\matplotlib-1.4.3-py3.4-win-amd64.egg\\matplotlib-1.4.3-py3.4-nspkg.pth',
    'DATA'),

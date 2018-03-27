@@ -1,4 +1,0 @@
-('c:\\python34\\lib\\site-packages\\pyparsing-2.0.3-py3.4.egg',
- None,
- {'*.so', 'EGG-INFO', '*.pyc', '*.pyd', '*.py', '*.pyo'},
- [])

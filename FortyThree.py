@@ -2,32 +2,18 @@
 
 import matplotlib
 matplotlib.use("Qt4Agg", force=True) #Nutno #Qt5Agg způsobuje neplynulost při procházení grafů
-
-import numpy as np, os, glob, sys, matplotlib.pyplot
+import time
+import os, sys, matplotlib.pyplot as plt
 from PyQt4 import QtCore, QtGui
-# reload(sys)
-# sys.setdefaultencoding('UTF8')
-
-# 
-# try:
-#     _fromUtf8 = QtCore.QString.fromUtf8
-# except AttributeError:
-#     def _fromUtf8(s):
-#         return s
-# 
-# try:
-#     _encoding = QtGui.QApplication.UnicodeUTF8
-#     def _translate(context, text, disambig):
-#         return QtGui.QApplication.translate(context, text, disambig, _encoding)
-# except AttributeError:
-#     def _translate(context, text, disambig):
-#         return QtGui.QApplication.translate(context, text, disambig)
+from numpy import mean
+from glob import glob
+from platform import system
 
 
 class Vypocet():
    
     def Forty_Three(self):
-        
+        t = time.time()
         ## Vstupní konstanty
         
         #sirka=1 #*** A kdyby se to celé vypočetlo pro sirka=4 nebo 5 (5 raději ne, dělá to tam bordel...), bylo by pozadí ještě hladší :)
@@ -55,7 +41,9 @@ class Vypocet():
         ## Načtení a zpracování souborů FRK ze spektrometru Deimos32
         
         os.chdir(path0)
-        soubor=glob.glob(path0 + '/*.FRK')
+        if not os.path.exists('out'):
+            os.makedirs('out')
+        soubor=glob(path0 + '/*.FRK')
         if (len(soubor)<1):
             self.textBrowser.setText(u'Nebyly nalezeny žádné soubory .FRK')
             return
@@ -64,7 +52,10 @@ class Vypocet():
         plot_pozadi=[0]*len(soubor)
         self.textBrowser.setText(u'Zpracovávám následující soubory: \n ')
         for i1 in range(0,len(soubor)): # 1): #
-            self.textBrowser.setText(u'Zpracovávám následující soubory: \n%s' %soubor[i1].replace(path0 + '/', ''))
+            if system()=='Windows':
+                self.textBrowser.setText(u'Zpracovávám následující soubory: \n%s' %os.path.basename(soubor[i1]))
+            else:
+                self.textBrowser.setText(u'Zpracovávám následující soubory: \n%s' %soubor[i1].replace(path0 + '/', ''))
             self.progressBar.setProperty("value", i1/len(soubor)*100)
             #print (i1, soubor[i1].replace(path0 + '/', ''))
             Y0=[0]*8192
@@ -159,7 +150,7 @@ class Vypocet():
                     P1[0]=P0[0]
                     P1[len(P0)-1]=P0[len(P0)-1]
                     for i11 in range (1,len(P0)-1):
-                        P1[i11]=np.mean([P0[i11-1],P0[i11],P0[i11+1]])
+                        P1[i11]=mean([P0[i11-1],P0[i11],P0[i11+1]])
                     pozadi.extend(P1) 
             else:
                 for i10 in range (0,cykl):
@@ -171,7 +162,7 @@ class Vypocet():
                     P1[0]=P0[0]
                     P1[len(P0)-1]=P0[len(P0)-1]
                     for i11 in range (1,len(P0)-1):
-                        P1[i11]=min(P0[i11],np.mean([P0[i11-1],P0[i11],P0[i11+1]]))
+                        P1[i11]=min(P0[i11],mean([P0[i11-1],P0[i11],P0[i11+1]]))
                     pozadi.extend(P1) 
             
             PP=[0.0]*len(C2)
@@ -193,12 +184,12 @@ class Vypocet():
                 if typ_pozadi==1:
                     for i11 in range (5,len(P0)-6):
                         if (i10<(cykl)):
-                            P1[i11]=min(Y[i11],np.mean([P0[i11-5],P0[i11-4],P0[i11-3],P0[i11-2],P0[i11-1],P0[i11],P0[i11+1],P0[i11+2],P0[i11+3],P0[i11+4],P0[i11+5]]))
+                            P1[i11]=min(Y[i11],mean([P0[i11-5],P0[i11-4],P0[i11-3],P0[i11-2],P0[i11-1],P0[i11],P0[i11+1],P0[i11+2],P0[i11+3],P0[i11+4],P0[i11+5]]))
                         else:
-                            P1[i11]=np.mean([P0[i11-5],P0[i11-4],P0[i11-3],P0[i11-2],P0[i11-1],P0[i11],P0[i11+1],P0[i11+2],P0[i11+3],P0[i11+4],P0[i11+5]])
+                            P1[i11]=mean([P0[i11-5],P0[i11-4],P0[i11-3],P0[i11-2],P0[i11-1],P0[i11],P0[i11+1],P0[i11+2],P0[i11+3],P0[i11+4],P0[i11+5]])
                 elif typ_pozadi==2 or typ_pozadi==3:
                     for i11 in range (5,len(P0)-6):
-                        P1[i11]=np.mean([P0[i11-5],P0[i11-4],P0[i11-3],P0[i11-2],P0[i11-1],P0[i11],P0[i11+1],P0[i11+2],P0[i11+3],P0[i11+4],P0[i11+5]])
+                        P1[i11]=mean([P0[i11-5],P0[i11-4],P0[i11-3],P0[i11-2],P0[i11-1],P0[i11],P0[i11+1],P0[i11+2],P0[i11+3],P0[i11+4],P0[i11+5]])
                 else:
                     self.textBrowser.setText('Chyba načtení typu pozadí.')
                 PP.extend(P1)    
@@ -217,18 +208,21 @@ class Vypocet():
                 
         ## Uložení spektra a pozadí
             
-            plot_jmeno[i1]=soubor[i1].replace(path0 + '/' , '').replace('.FRK','')
+            if system()=='Windows':
+                plot_jmeno[i1]=os.path.basename(soubor[i1]).replace('.FRK','')
+            else:
+                plot_jmeno[i1]=soubor[i1].replace(path0 + '/' , '').replace('.FRK','')
             plot_spektrum[i1]=Y
             plot_pozadi[i1]=PP
             
         ## Načtení hodnot tlive treal a data ze souboru txt     
             
-            if glob.glob(soubor[i1].replace('.FRK','.TXT'))==[]:
+            if glob(soubor[i1].replace('.FRK','.TXT'))==[]:
                 Time='Soubor %s nebyl ve složce %s nalezen.' % (soubor[i1].replace('.FRK','.TXT').replace(path0 + '/','') , path0)
                 Treal=''
                 Tlive=''
             else:
-                text=glob.glob(soubor[i1].replace('.FRK','.TXT'))
+                text=glob(soubor[i1].replace('.FRK','.TXT'))
                 f2=open(text[0])
                 for i in range(0,7):
                     if i==6:
@@ -239,7 +233,9 @@ class Vypocet():
                 
         ## Zapisování dat do souboru
             
-            vystup = open(soubor[i1].replace(path0 + '/', '').replace('FRK','OUTpy'),'w')
+            os.chdir('out')
+            if system()=='Windows': vystup = open(soubor[i1].replace(os.path.basename(soubor[i1]), 'out\\' + os.path.basename(soubor[i1])).replace('FRK','OUTpy'),'w')
+            else: vystup = open(soubor[i1].replace(path0 + '/', '').replace('FRK','OUTpy'),'w')
             vystup.write(u'Vyhodnocováno skriptem: %s \n \n' %(str(os.path.basename(__file__))))
             vystup.write(u'Vstupní parametry: \nFaktor šířky píku = %i \n' %(sirka))
             vystup.write(u'Pocet iterací při vyhlazování pozadí = %i  \n' %(cykl))
@@ -256,20 +252,22 @@ class Vypocet():
             for i in range (0,len(G20)):
                 vystup.write('%13f            %14f \n' % (G20[i], G26[i]) )
             vystup.close
+            os.chdir(path0)
             QtGui.QApplication.processEvents() #Obnovení okna aplikace na konci každého výpočetního cyklu
             
         ## Vykreslování grafů spekter a pozadí 
         if (grafy==2):
             self.textBrowser.setText(u'Hotovo! Zobrazuji grafy.')
             for i12 in range (0,len(soubor)):
-                matplotlib.pyplot.ion()
-                matplotlib.pyplot.figure(i12)
-                matplotlib.pyplot.title(plot_jmeno[i12])
-                matplotlib.pyplot.xlabel(u'Energie (keV)')
-                matplotlib.pyplot.ylabel(u'Četnost (-)')
-                matplotlib.pyplot.plot(C2, plot_spektrum[i12]) #vykreslení spektra
-                matplotlib.pyplot.plot(C2, plot_pozadi[i12], 'r') #vykreslení pozadí
+                plt.ion()
+                plt.figure(plot_jmeno[i12])
+                plt.title(plot_jmeno[i12])
+                plt.xlabel(u'Energie (keV)')
+                plt.ylabel(u'Četnost (-)')
+                plt.plot(C2, plot_spektrum[i12]) #vykreslení spektra
+                plt.plot(C2, plot_pozadi[i12], 'r') #vykreslení pozadí
             self.progressBar.setProperty("value", 100)
         else:
             self.textBrowser.setText(u'Hotovo!')
             self.progressBar.setProperty("value", 100)
+        print(time.time()-t)
