@@ -29,12 +29,19 @@ from numpy import mean
 from glob import glob
 from platform import system
 
-from joblib import Parallel, delayed
-from multiprocessing import cpu_count, freeze_support
+from joblib import Parallel, delayed, cpu_count
 # from multiprocessing import Pool, cpu_count
 
 
 import rozhrani, nastaveni, get_gamma_data
+
+class Self:
+
+   def __init__(self, name, salary):
+      self.nic="nic"
+      
+self=Self
+self.buttonBox={}
 
 def Multi(self,i1):
     
@@ -367,16 +374,10 @@ def Forty_Three(self):
 
 class FortyFour(QtGui.QMainWindow, rozhrani.Ui_Dialog, get_gamma_data.Data):
     def __init__(self):
+        nic='nic'
+        # super(self.__class__, self).__init__()
+        # self.setupUi(self)  
         
-        super(self.__class__, self).__init__()
-        self.setupUi(self)  
-        QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("accepted()")), self.start)
-        QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("rejected()")), self.reject)
-        QtCore.QObject.connect(self.pushButton, QtCore.SIGNAL(_fromUtf8("clicked()")), self.prochazet)
-        QtCore.QObject.connect(self.pushButton_2, QtCore.SIGNAL(_fromUtf8("clicked()")), self.konfigurace)
-        QtCore.QObject.connect(self.pushButton_3, QtCore.SIGNAL(_fromUtf8("clicked()")), self.settings)
-        self.slozka = None
-        self.exepath = os.getcwd()
         
     def prochazet(self):
         self.slozka = QtGui.QFileDialog.getExistingDirectory(None,(u"Vyberte složku s FRK soubory"))
@@ -441,12 +442,18 @@ class Nastaveni(QtGui.QMainWindow, nastaveni.Ui_Dialog):
 # -*- coding: utf-8 -*-
         
 
-def main():
-    app = QtGui.QApplication(sys.argv)  
+def main(rozhrani):
+    app = QtGui.QApplication(sys.argv)
+    QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("accepted()")), self.start)
+    QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("rejected()")), self.reject)
+    QtCore.QObject.connect(self.pushButton, QtCore.SIGNAL(_fromUtf8("clicked()")), self.prochazet)
+    QtCore.QObject.connect(self.pushButton_2, QtCore.SIGNAL(_fromUtf8("clicked()")), self.konfigurace)
+    QtCore.QObject.connect(self.pushButton_3, QtCore.SIGNAL(_fromUtf8("clicked()")), self.settings)
+    self.slozka = None
+    self.exepath = os.getcwd()
     form = FortyFour()                
     form.show()
     app.exec_()
 
-if __name__ == '__main__':
-    freeze_support()
-    main()                           
+if __name__ == '__main__':              
+    main(rozhrani)                           
