@@ -1,0 +1,12 @@
+Spectrum: C:\Python\CAEN\data\1r5_ch000_0_konec.FRK  20.11.2015
+            ENERGY CALIBRATION
+ 1.405555555556E+0000  2.944444444444E-0001  0.000000000000E+0000  0.000000000000E+0000
+
+            FWHM CALIBRATION
+ 2.144654088050E+0000  6.289308176101E-0003  0.000000000000E+0000
+
+Energy: preliminary linear calibration
+FWHM: preliminary linear calibration
+
+  channel  cherr    energy      area aerr%  fwhm chisq it left   n  lim isotope
+==============================================================================

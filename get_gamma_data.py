@@ -13,13 +13,16 @@ class Data():
         # print(prvek,neco)
         
         tercove_jadro0=periodic.element(prvek)
+        if tercove_jadro0 == None:
+            return {}
         tercove_jadro0hmotnost=str(round(tercove_jadro0.mass))
         
         tercove_jadro=tercove_jadro0hmotnost+prvek
         pocet_nukleonu=int(re.findall('\d+',tercove_jadro)[0])
         terc_prvek=tercove_jadro.replace(re.findall('\d+',tercove_jadro)[0],'')
         # print(pocet_nukleonu,prvek)
-        zkoumane_reakce=['n>2n','n>3n','n>4n','n>5n','n>p','n>a']
+        # zkoumane_reakce=['n>2n','n>3n','n>p','n>a']  #'n>4n','n>5n',
+        zkoumane_reakce=['n>5n','n>4n','n>3n','n>2n','n>p','n>a']
         m_castice={'n': 1,'p': 1,'d': 2,'t': 3,'3He': 3,'a': 4}
         z_castice={'n': 0,'p': 1,'d': 1,'t': 1,'3He': 2,'a': 2}
         Gamma=[]
@@ -128,7 +131,10 @@ class Data():
                         T_2d=float(T_2d0)*korekceT_2
                         T_2d_err0=(text2[i+1].split()[5]) #Načtení chyby T1/2
                         if len((T_2d0).strip().split('.')) == 2: #zjištění, zda je poločas uveden s nějakými desetinnými místy:
-                            T_2d_err=int(T_2d_err0)/(10**len(str(T_2d0).strip().split('.')[1]))*korekceT_2 #Určení, kolik desetinných míst má poločas a podle toho náležitá uprava mantisy? chyby poločasu
+                            try: T_2d_err=int(T_2d_err0)/(10**len(str(T_2d0).strip().split('.')[1]))*korekceT_2 #Určení, kolik desetinných míst má poločas a podle toho náležitá uprava mantisy? chyby poločasu
+                            except ValueError:
+                                T_2d_err0=max(T_2d_err0.strip('+').strip('-').split('-'))
+                                T_2d_err=int(T_2d_err0)/(10**len(str(T_2d0).strip().split('.')[1]))*korekceT_2
                         elif len((T_2d0).strip().split('.')) == 1:
                             T_2d_err=int(T_2d_err0)*korekceT_2
                         
