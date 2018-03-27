@@ -59,7 +59,7 @@ class Vypocet():
                 self.textBrowser.setText(u'Zpracovávám následující soubory: \n%s' %soubor[i1].replace(path0 + '/', ''))
             self.progressBar.setProperty("value", i1/len(soubor)*100)
             #print (i1, soubor[i1].replace(path0 + '/', ''))
-            Y0=[0]*sum(1 for line in open(soubor[i1])) #délka souboru FRK
+            Y0=[0]*8192 #Přidat vstupní proměnnou, za kterou bude možné doplnit počet kanálů
             f1=open(soubor[i1])
             for i2 in range(0, len(Y0)):
                 Y0[i2]=float(''.join(f1.readline().split()))
@@ -80,7 +80,7 @@ class Vypocet():
             spektrum['kanal']=[1] #C=[0]*8192 #kanál
             spektrum['energie']=[newconfig0+newconfig1] #C2=[0]*8192 #energie
             spektrum['derivace']=[0] #Z=[0]*8192 #derivace spektra
-            for i4 in range(1, len(Y0)):
+            for i4 in range(1, 8192):
                 spektrum['kanal'].append(i4+1)
                 spektrum['energie'].append(newconfig0+(i4+1)*newconfig1)
                 spektrum['derivace'].append(spektrum['cetnost'][i4]-spektrum['cetnost'][i4-1])
