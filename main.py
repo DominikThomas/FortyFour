@@ -35,11 +35,11 @@ class FortyFour(QtGui.QMainWindow, rozhrani.Ui_Dialog, FortyThree.Vypocet):
         
     def prochazet(self):
         self.slozka = QtGui.QFileDialog.getExistingDirectory(None,(u"Vyberte složku s FRK soubory"))
-        self.textBrowser.setText('Byla vybrána složka %s' %(self.slozka))
+        if self.slozka != '': self.textBrowser.setText('Byla vybrána složka %s' %(self.slozka))
         
     def konfigurace(self):
         self.cfgname = QtGui.QFileDialog.getOpenFileName(None,(u"Vyberte konfigurační soubor cfg"),"./",("Konfigurační soubory (*.CFG *.Cfg *.cfg)"))
-        self.textBrowser.setText('Byl vybrán konfigurační soubor %s' %(self.cfgname))
+        if self.cfgname != '': self.textBrowser.setText('Byl vybrán konfigurační soubor %s' %(self.cfgname))
         f0=open(self.cfgname)
         for i0 in range(0, 20):
             if i0==12:

@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'rozhrani.ui'
+# Form implementation generated from reading ui file '.\rozhrani.ui'
 #
-# Created: Tue Oct 13 17:33:41 2015
-#      by: PyQt4 UI code generator 4.11.3
+# Created by: PyQt4 UI code generator 4.11.4
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -169,6 +168,7 @@ class Ui_Dialog(object):
         self.spinBox.setFont(font)
         self.spinBox.setMinimum(1)
         self.spinBox.setMaximum(3)
+        self.spinBox.setProperty("value", 2)
         self.spinBox.setObjectName(_fromUtf8("spinBox"))
         self.label_10 = QtGui.QLabel(Dialog)
         self.label_10.setGeometry(QtCore.QRect(90, 200, 161, 21))

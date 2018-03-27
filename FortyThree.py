@@ -2,6 +2,7 @@
 
 import matplotlib
 matplotlib.use("Qt4Agg", force=True) #Nutno #Qt5Agg způsobuje neplynulost při procházení grafů
+
 import numpy as np, os, glob, sys, matplotlib.pyplot
 from PyQt4 import QtCore, QtGui
 # reload(sys)
@@ -150,6 +151,7 @@ class Vypocet():
         ## Vyhlazování pozadí
             if typ_pozadi==3:
                 for i10 in range (0,cykl):
+                    QtGui.QApplication.processEvents() #Obnovení okna aplikace na konci každého výpočetního cyklu
                     P0=[]
                     P0.extend(pozadi)
                     pozadi=[]
@@ -161,6 +163,7 @@ class Vypocet():
                     pozadi.extend(P1) 
             else:
                 for i10 in range (0,cykl):
+                    QtGui.QApplication.processEvents() #Obnovení okna aplikace na konci každého výpočetního cyklu
                     P0=[]
                     P0.extend(pozadi)
                     pozadi=[]
@@ -173,12 +176,14 @@ class Vypocet():
             
             PP=[0.0]*len(C2)
             for i9e in range (0,len(G23)-1):
+                QtGui.QApplication.processEvents() #Obnovení okna aplikace na konci každého výpočetního cyklu
                 PP[G23[i9e]]=pozadi[i9e]
                 inkrement=(pozadi[i9e+1]-pozadi[i9e])/(G23[i9e+1]-G23[i9e])
                 for i9f in range (0,(G23[i9e+1]-G23[i9e])):
                     PP[G23[i9e]+i9f]=PP[G23[i9e]]+i9f*inkrement
         
             for i10 in range (0,int(cykl/4)):
+                QtGui.QApplication.processEvents() #Obnovení okna aplikace na konci každého výpočetního cyklu
                 P0=[]
                 P0.extend(PP)
                 PP=[]
