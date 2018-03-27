@@ -229,6 +229,61 @@ class Vypocet():
                         Treal=f2.readline().replace('                   ','').replace(' sec\r\n', '')
                         Tlive=f2.readline().replace('                   ','').replace(' sec\r\n', '')
                     f2.readline()
+                    
+        ## Určení prvku a odhadnutí produkční reakce pro jednotlivé píky
+            if system()=='Windows': prvek0 = os.path.basename(soubor[i1]).replace('.FRK','')
+            else: prvek0 = (soubor[i1].replace(path0 + '/', '').replace('.FRK',''))
+            prvek1 = ''.join([i for i in prvek0 if not i.isdigit()])           
+            if prvek1[len(prvek1)-1]==('P' or 'p'):
+                prvek1=prvek1[0:len(prvek1)-1]
+            
+            G30=['  -  ']*len(G20) #reakce
+            G31=['   -   ']*len(G20) #isotop
+            G32=[' - ']*len(G20) #poločas
+            
+            import csv
+            n=0
+            GAMA=[]
+            
+            if prvek1 == ('TM' or 'tm' or 'Tm'):
+                with open(self.exepath + '/Tm.csv', newline='') as csvfile:
+                    gamasoubor = csv.reader(csvfile, delimiter=',', quotechar='|')
+                    for radek in gamasoubor:
+                        if n>3:
+                            GAMA.append(' '.join(radek).split())
+                        n+=1
+            elif prvek1 == ('AU' or 'au' or 'Au'):
+                with open(self.exepath + '/Au.csv', newline='') as csvfile:
+                    gamasoubor = csv.reader(csvfile, delimiter=',', quotechar='|')
+                    for radek in gamasoubor:
+                        if n>3:
+                            GAMA.append(' '.join(radek).split())
+                        n+=1
+            
+            if len(GAMA)>1:
+                n3=3
+                for n1 in range (0, len(G20)):
+                    for n2 in range (n3,len(GAMA)):
+                        # print(GAMA[n2-1])
+                        # print(len(GAMA[n2]), 9, len(G30), n1)
+                        # print((GAMA[n2]) , G20[n1])
+                        # print(type(GAMA[n2]))
+                        # fg
+                        #try:
+                        if ((float(GAMA[n2][9])-1) <= G20[n1] <= (float(GAMA[n2][9])+1)):
+                            G30[n1]=GAMA[n2][1].replace('>',',')
+                            G31[n1]=GAMA[n2][3]
+                            G32[n1]=float(GAMA[n2][5])
+                            n3=max(3,n2-5)
+                            break
+                        # except IndexError:
+                        #     print(len(GAMA[n2]), 9, len(G20), n1)
+                        #     
+                           # ?? možná nastavit, aby další cyklus běžel od hodnoty GAMA[n2][9]
+                            
+                    
+                # print(GAMA[0][3])
+            
                 
         ## Zapisování dat do souboru
             
@@ -247,12 +302,14 @@ class Vypocet():
                 vystup.write('%s \n%s \n%s \n \n' %(Time, Treal, Tlive)) 
             else:
                 vystup.write('%s%s%s \n' %(Time, Treal, Tlive))
-            vystup.write('Energie (keV)                Plocha (-)\n')
+            vystup.write('Energie (keV)                Plocha (-)                Reakce                   Isotop                    Poločas (s)\n')
             for i in range (0,len(G20)):
-                vystup.write('%13f            %14f \n' % (G20[i], G26[i]) )
+                vystup.write('%13f            %14f     %17s            %14s            %14s \n' % (G20[i], G26[i], G30[i], G31[i], str(G32[i])) )
             vystup.close
             os.chdir(path0)
             QtGui.QApplication.processEvents() #Obnovení okna aplikace na konci každého výpočetního cyklu
+            
+    
             
         ## Vykreslování grafů spekter a pozadí 
         if (grafy==2):
