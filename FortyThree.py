@@ -4,6 +4,24 @@ import matplotlib
 matplotlib.use("Qt4Agg", force=True) #Nutno #Qt5Agg způsobuje neplynulost při procházení grafů
 import numpy as np, os, glob, sys, matplotlib.pyplot
 from PyQt4 import QtCore, QtGui
+# reload(sys)
+# sys.setdefaultencoding('UTF8')
+
+# 
+# try:
+#     _fromUtf8 = QtCore.QString.fromUtf8
+# except AttributeError:
+#     def _fromUtf8(s):
+#         return s
+# 
+# try:
+#     _encoding = QtGui.QApplication.UnicodeUTF8
+#     def _translate(context, text, disambig):
+#         return QtGui.QApplication.translate(context, text, disambig, _encoding)
+# except AttributeError:
+#     def _translate(context, text, disambig):
+#         return QtGui.QApplication.translate(context, text, disambig)
+
 
 class Vypocet():
    
@@ -24,15 +42,11 @@ class Vypocet():
         if self.slozka:
             path0=str(self.slozka)
         else:
-            if sys.version_info.major<3:
-                self.textBrowser.setText(u'Vyberte prosím složku se soubory FRK'.encode("utf8"))
-            else:
-                self.textBrowser.setText(u'Vyberte prosím složku se soubory FRK')
+            self.textBrowser.setText(u'Vyberte prosím složku se soubory FRK')
             return
-        if sys.version_info.major<3:
-            self.textBrowser.setText(u'Zpracovávám následující soubory:')
-        else:
-            self.textBrowser.setText(u'Zpracovávám následující soubory:'.encode("utf8"))
+        
+        self.textBrowser.setText(u'Zpracovávám následující soubory:')
+        
         ## Nastavení energetické kalibrace
         newconfig0=float(config0[1])-float(config0[0])*(float(config1[1])-float(config0[1]))/(float(config1[0])-float(config0[0]))
         newconfig1=(float(config1[1])-float(config0[1]))/(float(config1[0])-float(config0[0]))
@@ -42,14 +56,14 @@ class Vypocet():
         os.chdir(path0)
         soubor=glob.glob(path0 + '/*.FRK')
         if (len(soubor)<1):
-            self.textBrowser.setText('Nebyly nalezeny žádné soubory .FRK')
+            self.textBrowser.setText(u'Nebyly nalezeny žádné soubory .FRK')
             return
         plot_jmeno=[0]*len(soubor)
         plot_spektrum=[0]*len(soubor)
         plot_pozadi=[0]*len(soubor)
-        self.textBrowser.setText('Zpracovávám následující soubory: \n ')
+        self.textBrowser.setText(u'Zpracovávám následující soubory: \n ')
         for i1 in range(0,len(soubor)): # 1): #
-            self.textBrowser.setText('Zpracovávám následující soubory: \n%s' %soubor[i1].replace(path0 + '/', ''))
+            self.textBrowser.setText(u'Zpracovávám následující soubory: \n%s' %soubor[i1].replace(path0 + '/', ''))
             self.progressBar.setProperty("value", i1/len(soubor)*100)
             #print (i1, soubor[i1].replace(path0 + '/', ''))
             Y0=[0]*8192
@@ -64,7 +78,7 @@ class Vypocet():
             elif(vyhlazeni==0):
                 Y=Y0
             else:
-                print("Chyba parametru 'vyhlazeni'.")
+                print(u"Chyba parametru 'vyhlazeni'.")
                 break
             C2=[0]*8192 #energie
             C=[0]*8192 #kanál
@@ -221,20 +235,14 @@ class Vypocet():
         ## Zapisování dat do souboru
             
             vystup = open(soubor[i1].replace(path0 + '/', '').replace('FRK','OUTpy'),'w')
-            if sys.version_info.major<3:
-                vystup.write(u'Vyhodnocováno skriptem: %s \n \n'.encode("utf8") %(str(os.path.basename(__file__))))
-                vystup.write(u'Vstupní parametry: \nFaktor šířky píku = %i \n'.encode("utf8") %(sirka))
-                vystup.write(u'Počet iterací při vyhlazování pozadí = %i  \n'.encode("utf8") %(cykl))
-                vystup.write(u'Byl použit %i. typ vyhlazování pozadí. \n.encode("utf8")' %(typ_pozadi))
-            else:
-                vystup.write('Vyhodnocováno skriptem: %s \n \n' %(str(os.path.basename(__file__))))
-                vystup.write('Vstupní parametry: \nFaktor šířky píku = %i \n' %(sirka))
-                vystup.write('Počet iterací při vyhlazování pozadí = %i  \n' %(cykl))
-                vystup.write('Byl použit %i. typ vyhlazování pozadí. \n' %(typ_pozadi))
+            vystup.write(u'Vyhodnocováno skriptem: %s \n \n' %(str(os.path.basename(__file__))))
+            vystup.write(u'Vstupní parametry: \nFaktor šířky píku = %i \n' %(sirka))
+            vystup.write(u'Pocet iterací při vyhlazování pozadí = %i  \n' %(cykl))
+            vystup.write(u'Byl použit %i. typ vyhlazování pozadí. \n' %(typ_pozadi))
             if vyhlazeni==0:
-                vystup.write('Spektrum nebylo vyhlazováno. \n \n')
+                vystup.write(u'Spektrum nebylo vyhlazováno. \n \n')
             else:
-                vystup.write('Spektrum bylo vyhlazováno. \n \n')
+                vystup.write(u'Spektrum bylo vyhlazováno. \n \n')
             if sys.version_info.major<3:
                 vystup.write('%s \n%s \n%s \n \n' %(Time, Treal, Tlive)) 
             else:
@@ -247,16 +255,16 @@ class Vypocet():
             
         ## Vykreslování grafů spekter a pozadí 
         if (grafy==2):
-            self.textBrowser.setText('Hotovo! Zobrazuji grafy.')
+            self.textBrowser.setText(u'Hotovo! Zobrazuji grafy.')
             for i12 in range (0,len(soubor)):
                 matplotlib.pyplot.ion()
                 matplotlib.pyplot.figure(i12)
                 matplotlib.pyplot.title(plot_jmeno[i12])
-                matplotlib.pyplot.xlabel('Energie (keV)')
-                matplotlib.pyplot.ylabel('Cetnost (-)')
+                matplotlib.pyplot.xlabel(u'Energie (keV)')
+                matplotlib.pyplot.ylabel(u'Četnost (-)')
                 matplotlib.pyplot.plot(C2, plot_spektrum[i12]) #vykreslení spektra
                 matplotlib.pyplot.plot(C2, plot_pozadi[i12], 'r') #vykreslení pozadí
             self.progressBar.setProperty("value", 100)
         else:
-            self.textBrowser.setText('Hotovo!')
+            self.textBrowser.setText(u'Hotovo!')
             self.progressBar.setProperty("value", 100)

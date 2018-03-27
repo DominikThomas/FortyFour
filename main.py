@@ -2,6 +2,9 @@
 
 from PyQt4 import QtCore, QtGui 
 import sys, sip, matplotlib
+if sys.version_info.major<3:
+    reload(sys)
+    sys.setdefaultencoding('UTF8')
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -26,12 +29,27 @@ class FortyFour(QtGui.QMainWindow, rozhrani.Ui_Dialog, FortyThree.Vypocet):
         self.setupUi(self)  
         QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("accepted()")), self.Forty_Three)
         QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("rejected()")), self.reject)
-        QtCore.QObject.connect(self.pushButton, QtCore.SIGNAL(_fromUtf8("clicked()")), self.Prochazet)
+        QtCore.QObject.connect(self.pushButton, QtCore.SIGNAL(_fromUtf8("clicked()")), self.prochazet)
+        QtCore.QObject.connect(self.pushButton_2, QtCore.SIGNAL(_fromUtf8("clicked()")), self.konfigurace)
         self.slozka = None
         
-    def Prochazet(self):
-        self.slozka = QtGui.QFileDialog.getExistingDirectory()
+    def prochazet(self):
+        self.slozka = QtGui.QFileDialog.getExistingDirectory(None,(u"Vyberte složku s FRK soubory"))
         self.textBrowser.setText('Byla vybrána složka %s' %(self.slozka))
+        
+    def konfigurace(self):
+        self.cfgname = QtGui.QFileDialog.getOpenFileName(None,(u"Vyberte konfigurační soubor cfg"),"./",("Konfigurační soubory (*.CFG *.Cfg *.cfg)"))
+        self.textBrowser.setText('Byl vybrán konfigurační soubor %s' %(self.cfgname))
+        f0=open(self.cfgname)
+        for i0 in range(0, 20):
+            if i0==12:
+                config0=(f0.readline().split())
+                config1=(f0.readline().split())
+            f0.readline()
+        self.lineEdit_3.setText(_translate("Dialog", config0[0], None))
+        self.lineEdit_4.setText(_translate("Dialog", config1[0], None))
+        self.lineEdit_5.setText(_translate("Dialog", config0[1], None))
+        self.lineEdit_6.setText(_translate("Dialog", config1[1], None))
     
     def reject(self):
         sys.exit()
