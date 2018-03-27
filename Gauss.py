@@ -24,7 +24,7 @@ f1=open(FRK1)
 for i2 in range(0, len(Y0)):
     Y0[i2]=float(''.join(f1.readline().split()))
 
-sirka=4
+sirka=3
 cykl = 8
 typ_pozadi=2
 ampl=200
@@ -203,14 +203,48 @@ plt.plot(OkrajP['energie'],OkrajP['cetnost'], 'bo:', label=u'Okraje')
 plt.legend()
 
 from scipy.optimize import curve_fit
-from scipy import asarray as ar,exp
+from scipy import asarray as ar,exp, sqrt
 
-for j in range(len(piky['levy'])):
+def gaus(x,a,x0,sigma):
+    return a*exp(-(x-x0)**2/(2*sigma**2))
+
+pocet=['nic']*35
+for i3 in range(1,30):
+    pocet0=0
+    for j in range(len(piky['levy'])): #range(120,136): #
         
-    plt.ion()
-    plt.figure(j)
-    plt.plot(spektrum['energie'][piky['levy'][j]:piky['pravy'][j]], BezPozadi[piky['levy'][j]:piky['pravy'][j]])
-    plt.show()
-    # nic=input('nic')
+        x = ar(spektrum['energie'][piky['levy'][j]:piky['pravy'][j]])
+        y = ar(BezPozadi[piky['levy'][j]:piky['pravy'][j]]) #ar(spektrum['cetnost'][piky['levy'][j]:piky['pravy'][j]])
+        
+        n = len(x)                          #the number of data
+        mean = sum(x*y)/n                   #note this correction
+        
+    
+        sigma = sqrt(sum(y*(x-mean)**2)/n)/i3 #sum(y*(x-mean)**2)/n        #note this correction
+        
+        
+        
+        try:
+            popt,pcov = curve_fit(gaus,x,y,p0=[max(y),mean,sigma])
+        except RuntimeError:
+            nic=0
+        else:
+            # print(abs(gaus(x,*popt).max()-gaus(x,*popt).mean()))
+            # if True: #abs(gaus(x,*popt).max()-gaus(x,*popt).mean())>1.0e-2:
+            #     plt.ion()
+            #     plt.figure(j)
+            #     plt.plot(x,y,'b+:',label='data')
+            #     plt.plot(x,gaus(x,*popt),'ro:',label='fit')
+            #     plt.legend()
+            #     plt.title(u'Pík %i'%j)
+            #     plt.xlabel('Time (s)')
+            #     plt.ylabel('Voltage (V)')
+            #     plt.show()
+            
+            if abs(gaus(x,*popt).max()-gaus(x,*popt).mean())>1.0e-2:
+                pocet0+=1
+    pocet[i3]=str(i3) + ' %i' %pocet0
+print(pocet)
+        # nic=input('nic')
     
     
