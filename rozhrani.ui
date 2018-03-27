@@ -19,7 +19,7 @@
    </property>
    <property name="geometry">
     <rect>
-     <x>300</x>
+     <x>208</x>
      <y>200</y>
      <width>131</width>
      <height>22</height>
@@ -331,8 +331,8 @@
   <widget class="QCheckBox" name="checkBox_2">
    <property name="geometry">
     <rect>
-     <x>440</x>
-     <y>200</y>
+     <x>333</x>
+     <y>201</y>
      <width>171</width>
      <height>22</height>
     </rect>
@@ -417,9 +417,9 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>190</y>
-     <width>60</width>
-     <height>41</height>
+     <y>194</y>
+     <width>41</width>
+     <height>31</height>
     </rect>
    </property>
    <property name="font">
@@ -440,9 +440,9 @@
   <widget class="QLabel" name="label_10">
    <property name="geometry">
     <rect>
-     <x>90</x>
+     <x>72</x>
      <y>200</y>
-     <width>161</width>
+     <width>121</width>
      <height>21</height>
     </rect>
    </property>
@@ -471,6 +471,24 @@
    </property>
    <property name="text">
     <string>Vybrat konfigurační soubor</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_3">
+   <property name="geometry">
+    <rect>
+     <x>498</x>
+     <y>198</y>
+     <width>111</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>Další nastavení</string>
    </property>
   </widget>
  </widget>

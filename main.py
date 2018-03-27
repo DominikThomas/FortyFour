@@ -2,7 +2,6 @@
 
 from PyQt4 import QtCore, QtGui 
 import sys, io, sip #, matplotlib
-
 if sys.version_info.major<3:
     reload(sys)
     sys.setdefaultencoding('UTF8')
@@ -21,17 +20,18 @@ except AttributeError:
     def _translate(context, text, disambig):
         return QtGui.QApplication.translate(context, text, disambig)
 
-import rozhrani, FortyThree
+import rozhrani, nastaveni, FortyThree
 
 class FortyFour(QtGui.QMainWindow, rozhrani.Ui_Dialog, FortyThree.Vypocet):
     def __init__(self):
         
         super(self.__class__, self).__init__()
         self.setupUi(self)  
-        QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("accepted()")), self.Forty_Three)
+        QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("accepted()")), self.start)
         QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("rejected()")), self.reject)
         QtCore.QObject.connect(self.pushButton, QtCore.SIGNAL(_fromUtf8("clicked()")), self.prochazet)
         QtCore.QObject.connect(self.pushButton_2, QtCore.SIGNAL(_fromUtf8("clicked()")), self.konfigurace)
+        QtCore.QObject.connect(self.pushButton_3, QtCore.SIGNAL(_fromUtf8("clicked()")), self.settings)
         self.slozka = None
         
     def prochazet(self):
@@ -55,10 +55,52 @@ class FortyFour(QtGui.QMainWindow, rozhrani.Ui_Dialog, FortyThree.Vypocet):
     def reject(self):
         sys.exit()
         
+    def settings(self):
+        
+        nastav = Nastaveni()
+        nastav.show()
+        QtGui.QApplication.exec_(self)
+        
+        QtCore.QObject.connect(nastav.pushButton, QtCore.SIGNAL(_fromUtf8("clicked()")), nastav.zavri)
+        
+    def start(self):    
+        if ('vaha0' in globals()) or ('vaha0' in locals()):
+            self.vaha1=vaha0
+            self.ampl1=ampl0
+        else:
+            self.vaha1=50
+            self.ampl1=-10000
+        self.Forty_Three()
+        
+        #app.exec_()
+        # nastav.raise_()
+        # nastav.activateWindow()
+        # print(1)
+        
+class Nastaveni(QtGui.QMainWindow, nastaveni.Ui_Dialog):
+    def __init__(self):
+        super(self.__class__, self).__init__()
+        self.setupUi(self)
+         
+        if 'vaha0' in globals():
+            print(vaha0)
+            self.lineEdit_9.setText(str(vaha0))
+            self.lineEdit_8.setText(str(ampl0))
+            
+    def zavri(self):
+        global vaha0
+        vaha0=int(self.lineEdit_9.text())
+        global ampl0
+        ampl0=int(self.lineEdit_8.text())
+        self.close()
+        
+
+    
+        
 def main():
     app = QtGui.QApplication(sys.argv)  
     form = FortyFour()                
-    form.show()                       
+    form.show()
     app.exec_()                        
 
 

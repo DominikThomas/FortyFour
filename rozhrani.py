@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '.\rozhrani.ui'
+# Form implementation generated from reading ui file 'rozhrani.ui'
 #
 # Created by: PyQt4 UI code generator 4.11.4
 #
@@ -28,7 +28,7 @@ class Ui_Dialog(object):
         Dialog.resize(625, 340)
         self.checkBox = QtGui.QCheckBox(Dialog)
         self.checkBox.setEnabled(True)
-        self.checkBox.setGeometry(QtCore.QRect(300, 200, 131, 22))
+        self.checkBox.setGeometry(QtCore.QRect(208, 200, 131, 22))
         font = QtGui.QFont()
         font.setPointSize(10)
         self.checkBox.setFont(font)
@@ -131,7 +131,7 @@ class Ui_Dialog(object):
         self.label_9.setFont(font)
         self.label_9.setObjectName(_fromUtf8("label_9"))
         self.checkBox_2 = QtGui.QCheckBox(Dialog)
-        self.checkBox_2.setGeometry(QtCore.QRect(440, 200, 171, 22))
+        self.checkBox_2.setGeometry(QtCore.QRect(333, 201, 171, 22))
         font = QtGui.QFont()
         font.setPointSize(10)
         self.checkBox_2.setFont(font)
@@ -162,7 +162,7 @@ class Ui_Dialog(object):
         self.line_2.setFrameShadow(QtGui.QFrame.Sunken)
         self.line_2.setObjectName(_fromUtf8("line_2"))
         self.spinBox = QtGui.QSpinBox(Dialog)
-        self.spinBox.setGeometry(QtCore.QRect(20, 190, 60, 41))
+        self.spinBox.setGeometry(QtCore.QRect(20, 194, 41, 31))
         font = QtGui.QFont()
         font.setPointSize(10)
         self.spinBox.setFont(font)
@@ -171,7 +171,7 @@ class Ui_Dialog(object):
         self.spinBox.setProperty("value", 2)
         self.spinBox.setObjectName(_fromUtf8("spinBox"))
         self.label_10 = QtGui.QLabel(Dialog)
-        self.label_10.setGeometry(QtCore.QRect(90, 200, 161, 21))
+        self.label_10.setGeometry(QtCore.QRect(72, 200, 121, 21))
         font = QtGui.QFont()
         font.setPointSize(10)
         self.label_10.setFont(font)
@@ -182,6 +182,12 @@ class Ui_Dialog(object):
         font.setPointSize(10)
         self.pushButton_2.setFont(font)
         self.pushButton_2.setObjectName(_fromUtf8("pushButton_2"))
+        self.pushButton_3 = QtGui.QPushButton(Dialog)
+        self.pushButton_3.setGeometry(QtCore.QRect(498, 198, 111, 27))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.pushButton_3.setFont(font)
+        self.pushButton_3.setObjectName(_fromUtf8("pushButton_3"))
 
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
@@ -208,4 +214,5 @@ class Ui_Dialog(object):
         self.pushButton.setText(_translate("Dialog", "Vybrat složku se soubory FRK", None))
         self.label_10.setText(_translate("Dialog", "Typ výpočtu pozadí", None))
         self.pushButton_2.setText(_translate("Dialog", "Vybrat konfigurační soubor", None))
+        self.pushButton_3.setText(_translate("Dialog", "Další nastavení", None))
 

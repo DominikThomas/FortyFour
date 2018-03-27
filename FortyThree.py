@@ -8,7 +8,7 @@ from PyQt4 import QtCore, QtGui
 from numpy import mean
 from glob import glob
 from platform import system
-
+import rozhrani, nastaveni
 
 class Vypocet():
    
@@ -16,10 +16,9 @@ class Vypocet():
         t = time.time()
         ## Vstupní konstanty
         
-        #sirka=1 #*** A kdyby se to celé vypočetlo pro sirka=4 nebo 5 (5 raději ne, dělá to tam bordel...), bylo by pozadí ještě hladší :)
         vyhlazeni=self.checkBox_2.checkState() #zda vyhlazovat samotné spektrum
-        vaha=50 #váha prostřední hodnoty při vyhlazování spektra
-        ampl=-10000 #diskriminace dle plochy píku bez pozadí, píky s plochou menší než 'ampl' nebudou vypsány ve výstupním souboru 
+        vaha=self.vaha1 #váha prostřední hodnoty při vyhlazování spektra
+        ampl=self.ampl1 #diskriminace dle plochy píku bez pozadí, píky s plochou menší než 'ampl' nebudou vypsány ve výstupním souboru 
         grafy=self.checkBox.checkState()
         typ_pozadi=self.spinBox.value()
         sirka=int(self.lineEdit.text())
