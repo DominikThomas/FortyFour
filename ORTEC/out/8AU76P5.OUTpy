@@ -1,4 +1,4 @@
-Vyhodnocováno skriptem: main3.py 
+Vyhodnocováno skriptem: main2.py 
  
 Vstupní parametry: 
 Faktor šířky píku = 1 
@@ -17,7 +17,6 @@ Energie (keV)                Plocha (-)                Reakce                   
     62.515719             176961.161896                   -                           -                         -                           -  
     64.193965             298289.915238                   -                           -                         -                           -  
     65.872210              32655.679684                   -                           -                         -                           -  
-    68.109871              -3275.333349                   -                           -                         -                           -  
     70.347532              10545.162719                   -                           -                         -                           -  
     72.585193             131411.064201                   -                           -                         -                           -  
     74.822854              97523.788104                   -                           -                         -                           -  

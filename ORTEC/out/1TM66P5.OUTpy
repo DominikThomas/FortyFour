@@ -1,4 +1,4 @@
-Vyhodnocováno skriptem: main3.py 
+Vyhodnocováno skriptem: main2.py 
  
 Vstupní parametry: 
 Faktor šířky píku = 1 
@@ -11,7 +11,6 @@ Real time: 842 sec
 Live time: 838 sec
  
 Energie (keV)                Plocha (-)                Reakce                   Intenzita(%)                 Isotop                    Poločas (s)
-    54.124491              -7159.467273                   -                           -                         -                           -  
     59.718643                262.902982                   -                           -                         -                           -  
     61.396889                 75.481268                   -                           -                         -                           -  
     62.515719                155.242743                   -                           -                         -                           -  

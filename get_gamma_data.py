@@ -4,7 +4,6 @@
 from bs4 import BeautifulSoup
 import requests, re, periodic, time
 from math import log
-from PyQt4 import QtGui
 
 class Data():
     
@@ -60,22 +59,22 @@ class Data():
                 nic='nic'
             
             if switch_url==0:
-                self.textBrowser.append(u'Načítám data ze serveru www.nndc.bnl.gov ')
-                QtGui.QApplication.processEvents()
+                print(u'Načítám data ze serveru www.nndc.bnl.gov ')
+                # QtGui.QApplication.processEvents()
                 switch_url=1
                 
             try:
                 url_stranky='http://www.nndc.bnl.gov/nudat2/decaysearchdirect.jsp?nuc=%s' %(isotop)
                 stranka=requests.get(url_stranky) #Stáhnutí stránky
-                QtGui.QApplication.processEvents()
+                # QtGui.QApplication.processEvents()
                 # print(url_stranky)
             except requests.exceptions.ConnectionError:
-                self.textBrowser.append(u'Nepodařilo se získat data ze serveru www.nndc.bnl.gov ')
+                print(u'Nepodařilo se získat data ze serveru www.nndc.bnl.gov ')
                 Gamma=[]
                 return Gamma
             else:
                 if switch_url==1:
-                    self.textBrowser.append(u'Hotovo!')
+                    print(u'Hotovo!')
                     switch_url=2
                 
             text0 = stranka.text #získání html kódu
