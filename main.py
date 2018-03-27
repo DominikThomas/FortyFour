@@ -2,6 +2,9 @@
 
 from PyQt4 import QtCore, QtGui 
 import sys, sip, matplotlib
+if sys.version_info.major<3:
+    reload(sys)
+    sys.setdefaultencoding('UTF8')
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8

@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['main.py'],
-             pathex=['C:\\Users\\Dominik\\Documents\\Python\\FortyFour\\FortyFour11'],
+             pathex=['C:\\Users\\Dominik\\Documents\\Python\\FortyFour\\FortyFour12'],
              binaries=None,
              datas=None,
              hiddenimports=[],
@@ -18,11 +18,16 @@ pyz = PYZ(a.pure, a.zipped_data,
              cipher=block_cipher)
 exe = EXE(pyz,
           a.scripts,
-          a.binaries,
-          a.zipfiles,
-          a.datas,
+          exclude_binaries=True,
           name='main',
           debug=False,
           strip=None,
           upx=True,
-          console=False )
+          console=True )
+coll = COLLECT(exe,
+               a.binaries,
+               a.zipfiles,
+               a.datas,
+               strip=None,
+               upx=True,
+               name='main')
