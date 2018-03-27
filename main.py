@@ -43,15 +43,11 @@ class FortyFour(QtGui.QMainWindow, rozhrani.Ui_Dialog, FortyThree.Vypocet, get_g
         self.cfgname = QtGui.QFileDialog.getOpenFileName(None,(u"Vyberte konfigurační soubor cfg"),"./",("Konfigurační soubory (*.CFG *.Cfg *.cfg)"))
         if self.cfgname != '': self.textBrowser.append('Byl vybrán konfigurační soubor %s' %(self.cfgname))
         f0=io.open(self.cfgname)
-        if 'J.Frana - OJS UJF Rez' in f0.readline():
-            for i0 in range(0, 20):
-                if i0==11:
-                    config0=(f0.readline().split())
-                    config1=(f0.readline().split())
-                f0.readline()
-        elif 'D.Thomas - OJR UJF Rez' in f0.readline():
-            config0=(f0.readline().split())
-            config1=(f0.readline().split())
+        for i0 in range(0, 20):
+            if i0==12:
+                config0=(f0.readline().split())
+                config1=(f0.readline().split())
+            f0.readline()
         self.lineEdit_3.setText(_translate("Dialog", config0[0], None))
         self.lineEdit_4.setText(_translate("Dialog", config1[0], None))
         self.lineEdit_5.setText(_translate("Dialog", config0[1], None))
