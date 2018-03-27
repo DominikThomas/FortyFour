@@ -63,7 +63,7 @@ class Data():
                 nic='nic'
             
             if switch_url==0:
-                self.textBrowser.append(u'Načítám data ze serveru www.nndc.bnl.gov ')
+                self.textBrowser.append(u'Připojuji se na server www.nndc.bnl.gov ')
                 QtGui.QApplication.processEvents()
                 switch_url=1
                 
@@ -78,7 +78,7 @@ class Data():
                 return Gamma
             else:
                 if switch_url==1:
-                    self.textBrowser.append(u'Hotovo!')
+                    self.textBrowser.append(u'Hotovo! Načítám data...')
                     switch_url=2
                 
             text0 = stranka.text #získání html kódu

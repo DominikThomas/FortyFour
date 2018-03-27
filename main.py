@@ -1,5 +1,7 @@
-from joblib import Parallel, delayed, cpu_count
+# from joblib import Parallel, delayed, cpu_count
 from PyQt4 import QtCore, QtGui 
+from glob import glob
+from multiprocessing import Pool, cpu_count
 import os, sys, io
 
 if sys.version_info.major<3:
@@ -24,8 +26,8 @@ import rozhrani, FortyThree, get_gamma_data
 
 class FortyFour(QtGui.QMainWindow, rozhrani.Ui_Dialog, FortyThree.Vypocet, get_gamma_data.Data):
     def __init__(self):
-        
-        super(self.__class__, self).__init__()
+        super(FortyFour, self).__init__()
+        # super(self.__class__, self).__init__()
         self.setupUi(self)  
         QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("accepted()")), self.start)
         QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("rejected()")), self.reject)
@@ -69,7 +71,6 @@ class FortyFour(QtGui.QMainWindow, rozhrani.Ui_Dialog, FortyThree.Vypocet, get_g
         self.lineEdit_4.setText(_translate("Dialog", config1[0], None))
         self.lineEdit_5.setText(_translate("Dialog", config0[1], None))
         self.lineEdit_6.setText(_translate("Dialog", config1[1], None))
-        print(config0)
         
     def ulozit_konfiguraci(self):
         self.save_filename = QtGui.QFileDialog.getSaveFileName(self, "Uložit konfigurační soubor", "", ".cfg")
@@ -83,9 +84,9 @@ class FortyFour(QtGui.QMainWindow, rozhrani.Ui_Dialog, FortyThree.Vypocet, get_g
     def reject(self):
         sys.exit()
     
-    def pokus(x):
-        y=x*x
-        print(y)
+    # def pokus(x):
+    #     y=x*x
+    #     print(y)
         
     def start(self):    
         if ('vaha0' in globals()) or ('vaha0' in locals()):
@@ -94,9 +95,18 @@ class FortyFour(QtGui.QMainWindow, rozhrani.Ui_Dialog, FortyThree.Vypocet, get_g
         else:
             self.vaha1=50
             self.ampl1=-10000
+        
+        self.soubory = glob(self.slozka + '/*.FRK') + glob(self.slozka + '/*.CNF')
+        
+        self.inputs = range(len(self.soubory))
+        if len(self.soubory)<1:
+            self.textBrowser.setText('Nebyly nalezeny žádné soubory .FRK ani .CNF')
+        else:
             
-        # Parallel(n_jobs=1)(delayed(FortyFour.pokus)(i1) for i1 in range(0,16))
-        self.Forty_Three()
+            print('OK0')
+            pool = Pool(processes=len(self.inputs))
+            pool.map(self.Forty_Three, self.inputs)
+            # self.Multi()
 
 def main():
     app = QtGui.QApplication(sys.argv)  

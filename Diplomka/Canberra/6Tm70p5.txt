@@ -1,0 +1,9 @@
+Start:
+30.01.2016 11:59:51
+
+Real time (s):  14089.040
+Live time (s):  13998.690
+Dead time (%):  0.641
+
+Kalibrace:
+nedefinováno
