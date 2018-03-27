@@ -2,9 +2,8 @@
 
 from PyQt4 import QtCore, QtGui 
 import sys, sip, matplotlib
-if sys.version_info.major<3:
-    reload(sys)
-    sys.setdefaultencoding('UTF8')
+reload(sys)
+sys.setdefaultencoding('UTF8')
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -34,7 +33,7 @@ class FortyFour(QtGui.QMainWindow, rozhrani.Ui_Dialog, FortyThree.Vypocet):
         
     def Prochazet(self):
         self.slozka = QtGui.QFileDialog.getExistingDirectory()
-        self.textBrowser.setText('Byla vybrána složka %s' %(self.slozka))
+        self.textBrowser.setText('Byla vybrana slozka %s' %(self.slozka))
     
     def reject(self):
         sys.exit()
