@@ -14,7 +14,10 @@ class Vypocet():
    
     def Forty_Three(self):
         t = time.time()
-        Gama_data={}
+        try:
+            self.Gama_data
+        except AttributeError:
+            self.Gama_data={}
         ## Vstupní konstanty
         
         vyhlazeni=self.checkBox_2.checkState() #zda vyhlazovat samotné spektrum
@@ -67,10 +70,11 @@ class Vypocet():
             spektrum['cetnost']=[]
             # Y=[0]*8192 == spektrum['cetnost']
             if(vyhlazeni==2):
+                spektrum['cetnost']=[0]*len(Y0)
                 for i3 in range(1, len(Y0)-1):
-                    spektrum['cetnost'].append(0)
+                    # spektrum['cetnost'].append(0)
                     spektrum['cetnost'][i3]=(Y0[i3-1]+vaha*Y0[i3]+Y0[i3+1])/(2+vaha)
-                    spektrum['cetnost'].append(0)
+                    # spektrum['cetnost'].append(0)
                 del(i3)
             elif(vyhlazeni==0):
                 spektrum['cetnost']=Y0
@@ -191,7 +195,7 @@ class Vypocet():
                 if typ_pozadi==1:
                     for i11 in range (5,len(P0)-6):
                         if (i10<(cykl)):
-                            P1[i11]=min(Y[i11],mean([P0[i11-5],P0[i11-4],P0[i11-3],P0[i11-2],P0[i11-1],P0[i11],P0[i11+1],P0[i11+2],P0[i11+3],P0[i11+4],P0[i11+5]]))
+                            P1[i11]=min(Y0[i11],mean([P0[i11-5],P0[i11-4],P0[i11-3],P0[i11-2],P0[i11-1],P0[i11],P0[i11+1],P0[i11+2],P0[i11+3],P0[i11+4],P0[i11+5]]))
                         else:
                             P1[i11]=mean([P0[i11-5],P0[i11-4],P0[i11-3],P0[i11-2],P0[i11-1],P0[i11],P0[i11+1],P0[i11+2],P0[i11+3],P0[i11+4],P0[i11+5]])
                 elif typ_pozadi==2 or typ_pozadi==3:
@@ -256,11 +260,11 @@ class Vypocet():
             
             n=0
             # print(type(prvek1))
-            if prvek1 in Gama_data.keys(): # Data o gama linkách z internetu jsou ukládány do dictionary Gama_data a není tedy potřeba je stahovat pro každý isotop zvlášť.
-                GAMA=Gama_data[prvek1]
+            if prvek1 in self.Gama_data.keys(): # Data o gama linkách z internetu jsou ukládány do dictionary self.Gama_data a není tedy potřeba je stahovat pro každý isotop zvlášť.
+                GAMA=self.Gama_data[prvek1]
             else:
                 GAMA=self.get_gamma(prvek1)
-                Gama_data[prvek1]=GAMA
+                self.Gama_data[prvek1]=GAMA
             
             if len(GAMA)>1:
                 n3=3
