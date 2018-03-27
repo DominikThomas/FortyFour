@@ -32,7 +32,7 @@ class Vypocet():
             self.textBrowser.setText(u'Vyberte prosím složku se soubory FRK')
             return
         
-        self.textBrowser.setText(u'Zpracovávám následující soubory:')
+        # self.textBrowser.append(u'Zpracovávám následující soubory:')
         
         ## Nastavení energetické kalibrace
         
@@ -51,12 +51,12 @@ class Vypocet():
         plot_jmeno=[0]*len(soubor)
         plot_spektrum=[0]*len(soubor)
         plot_pozadi=[0]*len(soubor)
-        self.textBrowser.setText(u'Zpracovávám následující soubory: \n ')
+        self.textBrowser.append(u'Zpracovávám následující soubory:')
         for i1 in range(0,len(soubor)): # 1): #
             if system()=='Windows':
-                self.textBrowser.setText(u'Zpracovávám následující soubory: \n%s' %os.path.basename(soubor[i1]))
+                self.textBrowser.append(u'%s' %os.path.basename(soubor[i1]))
             else:
-                self.textBrowser.setText(u'Zpracovávám následující soubory: \n%s' %soubor[i1].replace(path0 + '/', ''))
+                self.textBrowser.append(u'%s' %soubor[i1].replace(path0 + '/', ''))
             self.progressBar.setProperty("value", i1/len(soubor)*100)
             #print (i1, soubor[i1].replace(path0 + '/', ''))
             Y0=[0]*8192 #Přidat vstupní proměnnou, za kterou bude možné doplnit počet kanálů
@@ -307,7 +307,7 @@ class Vypocet():
         ## Vykreslování grafů spekter a pozadí 
         
         if (grafy==2):
-            self.textBrowser.setText(u'Hotovo! Zobrazuji grafy.')
+            self.textBrowser.append(u'Hotovo! Zobrazuji grafy.')
             for i12 in range (0,len(soubor)):
                 plt.ion()
                 plt.figure(plot_jmeno[i12])
@@ -318,6 +318,6 @@ class Vypocet():
                 plt.plot(spektrum['energie'], plot_pozadi[i12], 'r') #vykreslení pozadí
             self.progressBar.setProperty("value", 100)
         else:
-            self.textBrowser.setText(u'Hotovo!')
+            self.textBrowser.append(u'Hotovo!')
             self.progressBar.setProperty("value", 100)
         print(time.time()-t)
