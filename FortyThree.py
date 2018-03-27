@@ -9,8 +9,8 @@ from numpy import mean
 from glob import glob
 from platform import system
 import rozhrani, nastaveni
-# from joblib import Parallel, delayed, cpu_count
-from multiprocessing import Pool, cpu_count
+from joblib import Parallel, delayed, cpu_count
+# from multiprocessing import Pool, cpu_count
 
 class Vypocet():
     def Multi(self,i1):
@@ -311,11 +311,12 @@ class Vypocet():
         plot_pozadi=[0]*len(soubor)
         self.textBrowser.append(u'Zpracovávám následující soubory:')
         
-        # Parallel(n_jobs=cpu_count())(delayed(self.Multi)(i1) for i1 in range(0,len(soubor)))
+        print('Ahoj :)')
+        Parallel(n_jobs=cpu_count())(delayed(self.Multi)(i1) for i1 in range(0,len(soubor)))
         
-        inputs=range(0,len(soubor))
-        pool = Pool(processes=cpu_count())              
-        pool.map(self.Multi, inputs)
+        # inputs=range(0,len(soubor))
+        # pool = Pool(processes=1)              
+        # pool.map(self.Multi, inputs)
         
             
             
