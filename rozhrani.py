@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '9.ui'
+# Form implementation generated from reading ui file '10.ui'
 #
 # Created by: PyQt4 UI code generator 4.11.4
 #
@@ -58,7 +58,7 @@ class Ui_Dialog(object):
         self.spinBox.setFont(font)
         self.spinBox.setMinimum(1)
         self.spinBox.setMaximum(4)
-        self.spinBox.setProperty("value", 2)
+        self.spinBox.setProperty("value", 4)
         self.spinBox.setObjectName(_fromUtf8("spinBox"))
         self.label_8 = QtGui.QLabel(self.tab)
         self.label_8.setGeometry(QtCore.QRect(20, 76, 254, 31))
@@ -252,7 +252,7 @@ class Ui_Dialog(object):
         self.retranslateUi(Dialog)
         self.tabWidget.setCurrentIndex(0)
         self.comboBox_2.setCurrentIndex(4)
-        self.comboBox_3.setCurrentIndex(3)
+        self.comboBox_3.setCurrentIndex(4)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):
@@ -261,7 +261,7 @@ class Ui_Dialog(object):
         self.pushButton.setText(_translate("Dialog", "Vybrat složku se soubory FRK", None))
         self.label_10.setText(_translate("Dialog", "Typ výpočtu pozadí", None))
         self.label_8.setText(_translate("Dialog", "Počet cyklů při vyhlazování pozadí:", None))
-        self.lineEdit_2.setText(_translate("Dialog", "8", None))
+        self.lineEdit_2.setText(_translate("Dialog", "3", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("Dialog", "Hlavní okno", None))
         self.lineEdit_5.setText(_translate("Dialog", "510.9989", None))
         self.label_3.setText(_translate("Dialog", "1. bod", None))
