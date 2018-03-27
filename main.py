@@ -20,9 +20,9 @@ except AttributeError:
     def _translate(context, text, disambig):
         return QtGui.QApplication.translate(context, text, disambig)
 
-import rozhrani, nastaveni, FortyThree
+import rozhrani, nastaveni, FortyThree, get_gamma_data
 
-class FortyFour(QtGui.QMainWindow, rozhrani.Ui_Dialog, FortyThree.Vypocet):
+class FortyFour(QtGui.QMainWindow, rozhrani.Ui_Dialog, FortyThree.Vypocet, get_gamma_data.Data):
     def __init__(self):
         
         super(self.__class__, self).__init__()

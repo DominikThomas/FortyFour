@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import matplotlib
-matplotlib.use("Qt4Agg", force=True) #Nutno #Qt5Agg způsobuje neplynulost při procházení grafů
+matplotlib.use("Qt5Agg", force=True) #Nutno #Qt5Agg způsobuje neplynulost při procházení grafů
 import time
 import os, sys, matplotlib.pyplot as plt
 from PyQt4 import QtCore, QtGui
@@ -14,7 +14,7 @@ class Vypocet():
    
     def Forty_Three(self):
         t = time.time()
-        
+        Gama_data={}
         ## Vstupní konstanty
         
         vyhlazeni=self.checkBox_2.checkState() #zda vyhlazovat samotné spektrum
@@ -243,23 +243,24 @@ class Vypocet():
             if system()=='Windows': prvek0 = os.path.basename(soubor[i1]).replace('.FRK','')
             else: prvek0 = (soubor[i1].replace(path0 + '/', '').replace('.FRK',''))
             prvek1 = ''.join([i for i in prvek0 if not i.isdigit()])           
-            if prvek1[len(prvek1)-1]==('P' or 'p'):
+            if prvek1[len(prvek1)-1]==('P' or 'p'): #Starý způsob
                 prvek1=prvek1[0:len(prvek1)-1]
+                
+            if 'Pkopie' in prvek1: #Nový způsob
+                prvek1=prvek1.replace('Pkopie','')
             
             piky['reakce']=['  -  ']*len(piky['energie']) #reakce G30
             piky['intensita']=['   -   ']*len(piky['energie']) #intensita G33
             piky['isotop']=['   -   ']*len(piky['energie']) #isotop G31
             piky['polocas']=[' - ']*len(piky['energie']) #poločas G32
             
-            from Au_Gama import Gama_Au #To je super!!!
-            from Tm_Gama import Gama_Tm
             n=0
-            GAMA=[]
-            
-            if prvek1 == ('TM' or 'tm' or 'Tm'):
-                GAMA=Gama_Tm
-            elif prvek1 == ('AU' or 'au' or 'Au'):
-                GAMA=Gama_Au
+            # print(type(prvek1))
+            if prvek1 in Gama_data.keys(): # Data o gama linkách z internetu jsou ukládány do dictionary Gama_data a není tedy potřeba je stahovat pro každý isotop zvlášť.
+                GAMA=Gama_data[prvek1]
+            else:
+                GAMA=self.get_gamma(prvek1)
+                Gama_data[prvek1]=GAMA
             
             if len(GAMA)>1:
                 n3=3
@@ -320,4 +321,3 @@ class Vypocet():
             self.textBrowser.setText(u'Hotovo!')
             self.progressBar.setProperty("value", 100)
         print(time.time()-t)
-        
