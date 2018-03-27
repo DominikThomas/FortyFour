@@ -326,25 +326,31 @@ class Vypocet():
             for i in range (1, len(kraje_cet)):
                 kraje_der.append(kraje_cet[i]-kraje_cet[i-1])
                 
-            
-            
-            pozadi = [0] * len(kraje_cet)
+            pozadi_2 = [0] * len(kraje_cet)
+            kraje_der_2 = [0] * len(kraje_der)
             
             i=1
             
             while i < len(kraje_cet)-2:
-                if abs(kraje_der[i]) < 10:
-                    
-                    pozadi[i] = kraje_cet[i]
+                if abs(kraje_der[i]) < 50:
+                    pozadi_2[i] = kraje_cet[i]
+                    kraje_der_2[i] = kraje_der[i]
                     i+=1
-                    
                 else:
                     
-                    pozadi[i] = kraje_cet[i]
-                    pozadi[i+1] = min(kraje_cet[i+1],mean([pozadi[i],kraje_cet[i+4]]))
-                    pozadi[i+2] = min(kraje_cet[i+2],mean([pozadi[i+1],kraje_cet[i+5]]))
+                    j=i
+                    while (abs(kraje_der[j]) > 50) and (j-i<30):
+                        
+                        j+=1
                     
-                    i+=3
+                    d=j-i
+                    kraje_der_2[i:j] = [mean(kraje_der[i:j])]*d
+                    pozadi_2[i]=pozadi_2[i-1]+kraje_der_2[i]
+                    i+=1
+                    
+                    for k in range(d):
+                        pozadi_2[i+k]=pozadi_2[i+k-1]+kraje_der_2[i+k]
+                    i+=d
                     
             ##
                 
@@ -352,9 +358,11 @@ class Vypocet():
             pozadi_vyhlazeno[0] = kraje_cet[0]
             pozadi_vyhlazeno[len(kraje_cet)-1] = kraje_cet[len(kraje_cet)-1]
             
-            cykl = 2
+            # cykl = 2
             
-            pozadi0 = pozadi
+            pozadi0 = []
+            for i in pozadi_2:
+                pozadi0.append(i)
             
             for j in range(cykl):
                 for i in range (1, len(pozadi0)-1):
@@ -390,7 +398,7 @@ class Vypocet():
             P0=[]
             P0.extend(PP)
             
-            print(P0==PP)
+            # print(P0==PP)
             
             PP=[]
             P1=[0.0]*self.pocet_kanalu
