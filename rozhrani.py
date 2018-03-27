@@ -57,7 +57,7 @@ class Ui_Dialog(object):
         font.setPointSize(12)
         self.spinBox.setFont(font)
         self.spinBox.setMinimum(1)
-        self.spinBox.setMaximum(3)
+        self.spinBox.setMaximum(4)
         self.spinBox.setProperty("value", 2)
         self.spinBox.setObjectName(_fromUtf8("spinBox"))
         self.label_8 = QtGui.QLabel(self.tab)

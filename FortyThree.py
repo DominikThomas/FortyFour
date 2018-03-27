@@ -99,11 +99,11 @@ class Vypocet():
         config0=[self.lineEdit_3.text(),self.lineEdit_5.text()]
         config1=[self.lineEdit_4.text(),self.lineEdit_6.text()]
         radit=[self.checkBox_4.checkState(),self.comboBox.currentText().lower().replace('č','c')] #zajištěno, že "klíče" jsou malým písmenem
-        pocet_kanalu=int(self.comboBox_3.currentText())
+        self.pocet_kanalu=int(self.comboBox_3.currentText())
         if self.slozka:
             path0=str(self.slozka)
         else:
-            self.Vypis('Vyberte prosím složku se soubory FRK',1)
+            self.Vypis('Vyberte prosím složku se soubory FRK nebo CNF',1)
             return
         
         ## Nastavení energetické kalibrace
@@ -112,21 +112,60 @@ class Vypocet():
         newconfig[0]=float(config0[1])-float(config0[0])*(float(config1[1])-float(config0[1]))/(float(config1[0])-float(config0[0]))
         newconfig[1]=(float(config1[1])-float(config0[1]))/(float(config1[0])-float(config0[0]))
         
-        return(vyhlazeni,vaha,ampl,grafy,typ_pozadi,sirka,cykl,radit,pocet_kanalu,path0,newconfig)
+        return(vyhlazeni,vaha,ampl,grafy,typ_pozadi,sirka,cykl,radit,path0,newconfig)
+
+    def xy_txt(self,soubor):
+
+        f=open(soubor)
+       # print(soubor)
+        a=f.readline()
+        while not ('column_1' in a):
+            a=f.readline()
+            #print(a)
+            #time.sleep(1)
+            if 'date and time' in a:
+                b=a.split()
+                date0=b[5].split('-')
+                startdate = date0[2]+'.'+date0[1]+'.'+date0[0]
+                starttime = b[6]
+            if 'live time' in a:
+                tlive=float(a.split()[4])
+            if 'real time' in a:
+                treal=float(a.split()[4])
+        f.close()
+        tdead=(treal-tlive)/treal*100
+
+        vystup = open(soubor.replace('xy','txt'),'w')
+        vystup.write(u"Start:\n")
+        vystup.write(u"%s %s\n\n" %(startdate, starttime))
+        vystup.write(u"Real time (s):  %5.3f\n" %treal)
+        vystup.write(u"Live time (s):  %5.3f\n" %tlive)
+        vystup.write(u"Dead time (%s):  %5.3f\n\n" %('%',tdead))        # aneb jak napsat procento...         
+        vystup.write(u"Kalibrace:\n")
+        vystup.write(u"nedefinováno")
+        vystup.close()
+
+
         
     def Najdi_nacti(self,path0):
         
         os.chdir(path0)
         if not os.path.exists('out'):
             os.makedirs('out')
-        soubor=glob(path0 + '/*.FRK')
+        soubor=glob(path0 + '/*.FRK') + glob(path0 + '/*.CNF')
+        if glob(path0 + '/*.CNF') != []:
+            os.system('xyconv -t canberra_cnf -m %s/*.CNF'%path0)
+            for i in range(0,len(soubor)):
+                if 'CNF' in soubor[i]:
+                    soubor[i]=soubor[i].replace('CNF','xy')
+                    self.xy_txt(soubor[i])        
         if (len(soubor)<1):
-            self.Vypis('Nebyly nalezeny žádné soubory .FRK',1)
+            self.Vypis('Nebyly nalezeny žádné soubory .FRK ani .CNF',1)
             return
         
         return(soubor)
         
-    def Vytvor_spektrum(self,i1,soubor,path0,pocet_kanalu,vyhlazeni,vaha,newconfig):
+    def Vytvor_spektrum(self,i1,soubor,path0,vyhlazeni,vaha,newconfig):
         
         chyba=0
         if system()=='Windows':
@@ -134,43 +173,68 @@ class Vypocet():
         else:
             self.Vypis('%s' %soubor[i1].replace(path0 + '/', ''),0)
         self.progressBar.setProperty("value", i1/len(soubor)*100)
-        Y0=[0]*pocet_kanalu #Přidat vstupní proměnnou, za kterou bude možné doplnit počet kanálů
+        Y0=[0]*self.pocet_kanalu #Přidat vstupní proměnnou, za kterou bude možné doplnit počet kanálů
         f1=open(soubor[i1])
-        
-        for i2 in range(0, len(Y0)):
-            a=f1.readline().split()
-            try:
-                Y0[i2]=float(''.join(a))
-            except ValueError:
-                print(a)
+
         spektrum={}
-        spektrum['cetnost']=[]
-        if(vyhlazeni==2):
-            spektrum['cetnost']=[0]*len(Y0)
-            for i3 in range(1, len(Y0)-1):
-                spektrum['cetnost'][i3]=(Y0[i3-1]+vaha*Y0[i3]+Y0[i3+1])/(2+vaha)
-            del(i3)
-        elif(vyhlazeni==0):
-            spektrum['cetnost']=Y0
-        spektrum['kanal']=[1] #C=[0]*8192 #kanál
-        spektrum['energie']=[newconfig[0]+newconfig[1]] #C2=[0]*8192 #energie
-        spektrum['derivace']=[0] #Z=[0]*8192 #derivace spektra
+
+        if '.FRK' in soubor[i1]:
+            for i2 in range(0, self.pocet_kanalu):
+                a=f1.readline().split()
+                try:
+                    Y0[i2]=float(''.join(a))
+                except ValueError:
+                    print(a)
+            spektrum['cetnost']=[]
+            if(vyhlazeni==2):
+                spektrum['cetnost']=[0]*self.pocet_kanalu
+                for i3 in range(1, self.pocet_kanalu-1):
+                    spektrum['cetnost'][i3]=(Y0[i3-1]+vaha*Y0[i3]+Y0[i3+1])/(2+vaha)
+                del(i3)
+            elif(vyhlazeni==0):
+                spektrum['cetnost']=Y0
+
+        elif '.xy' in soubor[i1]:
+            a=f1.readline().split()
+            while a != ['#', 'column_1', 'column_2']:
+                a=f1.readline().split()
+            spektrum['kanal']=[1] 
+            spektrum['energie']=[0] 
+            spektrum['cetnost']=[0] 
+            spektrum['derivace']=[0] 
+            for i in range (1,self.pocet_kanalu):
+                a=f1.readline().split()
+                spektrum['kanal'].append(i+1)
+                spektrum['energie'].append(float(a[0]))
+                spektrum['cetnost'].append(float(a[1]))
+                spektrum['derivace'].append(spektrum['cetnost'][i]-spektrum['cetnost'][i-1])
         
         return spektrum
-            
+        
+                                
+                
             
     def Najdi_piky(self, spektrum,newconfig,sirka):
+        if 'kanal' in spektrum.keys():
+            pass
+        else:
+            spektrum['kanal']=[1] #C=[0]*8192 #kanál
+            spektrum['energie']=[newconfig[0]+newconfig[1]] #C2=[0]*8192 #energie
+            spektrum['derivace']=[0] #Z=[0]*8192 #derivace spektra
+            for i4 in range(1, self.pocet_kanalu):
+                spektrum['kanal'].append(i4+1)
+                spektrum['energie'].append(newconfig[0]+(i4+1)*newconfig[1])
+                spektrum['derivace'].append(spektrum['cetnost'][i4]-spektrum['cetnost'][i4-1])
         
-        for i4 in range(1, len(spektrum['cetnost'])):
-            spektrum['kanal'].append(i4+1)
-            spektrum['energie'].append(newconfig[0]+(i4+1)*newconfig[1])
-            spektrum['derivace'].append(spektrum['cetnost'][i4]-spektrum['cetnost'][i4-1])
+        #print(spektrum)
+
+
         piky0={}
         piky0['kanal']=[] #G0=[] #kanál přibližného středu píku (derivace mění znaménko)
         piky0['energie']=[] #G1=[] #energie přibližného středu píku (derivace mění znaménko)
         piky0['levy']=[] #H0=[] #levé okraje píků
         piky0['pravy']=[] #H1=[] #pravé okraje píků
-        for i5 in range(0, len(spektrum['derivace'])-sirka):
+        for i5 in range(0, self.pocet_kanalu-sirka):
             if(spektrum['derivace'][i5+sirka]<0):
                 piky0['kanal'].append(spektrum['kanal'][i5])
                 piky0['energie'].append(spektrum['energie'][i5])
@@ -180,7 +244,7 @@ class Vypocet():
                 l12=0
             l1=max(piky0['kanal'][i6],l12+1)
             l2=max(l1+sirka,l11)
-            if (l1>len(spektrum['derivace']) or l2>len(spektrum['derivace'])):
+            if (l1>self.pocet_kanalu or l2>self.pocet_kanalu):
                 break
             while True:
                 l1-=1
@@ -189,16 +253,19 @@ class Vypocet():
             if l1==0:
                 l1=1
             piky0['levy'].append(l1)
-            if(l2<len(spektrum['energie'])):
+            if(l2<self.pocet_kanalu):
                 while True:
                     l2+=1
-                    if(l2==(len(spektrum['energie'])-1) or l2>=len(spektrum['energie']) or spektrum['derivace'][l2]>0.1):
+                    if(l2==(self.pocet_kanalu-1) or l2>=self.pocet_kanalu or spektrum['derivace'][l2]>0.1):
                         break
                 piky0['pravy'].append(l2-1)
             else:
                 piky0['pravy'].append(l2-2)
             l11=l1
             l12=l2
+
+        #print(piky0)
+
         return piky0
         
     def Uprav_piky(self,piky0,spektrum):
@@ -248,7 +315,54 @@ class Vypocet():
                 P1[len(P0)-1]=P0[len(P0)-1]
                 for i11 in range (1,len(P0)-1):
                     P1[i11]=mean([P0[i11-1],P0[i11],P0[i11+1]])
-                pozadi.extend(P1) 
+                pozadi.extend(P1)
+        
+        elif typ_pozadi==4:
+            kraje_cet = []
+            kraje_cet.extend(pozadi)
+            
+            kraje_der = [0]
+            
+            for i in range (1, len(kraje_cet)):
+                kraje_der.append(kraje_cet[i]-kraje_cet[i-1])
+                
+            
+            
+            pozadi = [0] * len(kraje_cet)
+            
+            i=1
+            
+            while i < len(kraje_cet)-2:
+                if abs(kraje_der[i]) < 10:
+                    
+                    pozadi[i] = kraje_cet[i]
+                    i+=1
+                    
+                else:
+                    
+                    pozadi[i] = kraje_cet[i]
+                    pozadi[i+1] = min(kraje_cet[i+1],mean([pozadi[i],kraje_cet[i+4]]))
+                    pozadi[i+2] = min(kraje_cet[i+2],mean([pozadi[i+1],kraje_cet[i+5]]))
+                    
+                    i+=3
+                    
+            ##
+                
+            pozadi_vyhlazeno = [0] * len(kraje_cet)
+            pozadi_vyhlazeno[0] = kraje_cet[0]
+            pozadi_vyhlazeno[len(kraje_cet)-1] = kraje_cet[len(kraje_cet)-1]
+            
+            cykl = 2
+            
+            pozadi0 = pozadi
+            
+            for j in range(cykl):
+                for i in range (1, len(pozadi0)-1):
+                    pozadi_vyhlazeno[i] = mean([pozadi0[i-1],pozadi0[i],pozadi0[i+1]])
+                pozadi0 = pozadi_vyhlazeno
+                
+            pozadi = pozadi0
+        
         else:
             for i10 in range (0,cykl):
                 QtGui.QApplication.processEvents() #Obnovení okna aplikace na konci každého výpočetního cyklu
@@ -262,7 +376,8 @@ class Vypocet():
                     P1[i11]=min(P0[i11],mean([P0[i11-1],P0[i11],P0[i11+1]]))
                 pozadi.extend(P1)
             
-        PP=[0.0]*len(spektrum['energie'])
+        PP=[0.0]*self.pocet_kanalu
+        
         for i9e in range (0,len(piky['pravy'])-1):
             QtGui.QApplication.processEvents() #Obnovení okna aplikace na konci každého výpočetního cyklu
             PP[piky['pravy'][i9e]]=pozadi[i9e]
@@ -274,19 +389,25 @@ class Vypocet():
             QtGui.QApplication.processEvents() #Obnovení okna aplikace na konci každého výpočetního cyklu
             P0=[]
             P0.extend(PP)
+            
+            print(P0==PP)
+            
             PP=[]
-            P1=[0.0]*len(P0)
+            P1=[0.0]*self.pocet_kanalu
             P1[0:5]=P0[0:5]
-            P1[(len(P0)-6):(len(P0)-1)]=P0[(len(P0)-6):(len(P0)-1)]
+            P1[(self.pocet_kanalu-6):(self.pocet_kanalu-1)]=P0[(self.pocet_kanalu-6):(self.pocet_kanalu-1)]
             if typ_pozadi==1:
-                for i11 in range (5,len(P0)-6):
+                for i11 in range (5,self.pocet_kanalu-6):
                     if (i10<(cykl)):
                         P1[i11]=min(Y0[i11],mean([P0[i11-5],P0[i11-4],P0[i11-3],P0[i11-2],P0[i11-1],P0[i11],P0[i11+1],P0[i11+2],P0[i11+3],P0[i11+4],P0[i11+5]]))
                     else:
                         P1[i11]=mean([P0[i11-5],P0[i11-4],P0[i11-3],P0[i11-2],P0[i11-1],P0[i11],P0[i11+1],P0[i11+2],P0[i11+3],P0[i11+4],P0[i11+5]])
             elif typ_pozadi==2 or typ_pozadi==3:
-                for i11 in range (5,len(P0)-6):
+                for i11 in range (5,self.pocet_kanalu-6):
                     P1[i11]=mean([P0[i11-5],P0[i11-4],P0[i11-3],P0[i11-2],P0[i11-1],P0[i11],P0[i11+1],P0[i11+2],P0[i11+3],P0[i11+4],P0[i11+5]])
+            elif typ_pozadi == 4:
+                P1 = P0
+                
             else:
                 self.Vypis('Chyba načtení typu pozadí.',1)
             PP.extend(P1)    
@@ -314,7 +435,7 @@ class Vypocet():
         
         ## Vstupní konstanty
  
-        vyhlazeni,vaha,ampl,grafy,typ_pozadi,sirka,cykl,radit,pocet_kanalu,path0,newconfig = self.Vstup_konstanty()
+        vyhlazeni,vaha,ampl,grafy,typ_pozadi,sirka,cykl,radit,path0,newconfig = self.Vstup_konstanty()
         
         ## Načtení a zpracování souborů FRK ze spektrometru Deimos32
         
@@ -327,7 +448,7 @@ class Vypocet():
         
         for i1 in range(0,len(soubor)): # 1): #
             
-            spektrum = self.Vytvor_spektrum(i1,soubor,path0,pocet_kanalu,vyhlazeni,vaha,newconfig)
+            spektrum = self.Vytvor_spektrum(i1,soubor,path0,vyhlazeni,vaha,newconfig)
             
             piky0 = self.Najdi_piky(spektrum,newconfig,sirka)
             
@@ -339,32 +460,45 @@ class Vypocet():
         ## Uložení spektra a pozadí
             
             if system()=='Windows':
-                plot_jmeno[i1]=os.path.basename(soubor[i1]).replace('.FRK','')
+                plot_jmeno[i1]=os.path.basename(soubor[i1]).replace('.FRK','').replace('.xy','')
             else:
-                plot_jmeno[i1]=soubor[i1].replace(path0 + '/' , '').replace('.FRK','')
+                plot_jmeno[i1]=soubor[i1].replace(path0 + '/' , '').replace('.FRK','').replace('.xy','')
             plot_spektrum[i1]=spektrum['cetnost']
             plot_pozadi[i1]=PP
             
         ## Načtení hodnot tlive treal a data ze souboru txt     
             
-            if glob(soubor[i1].replace('.FRK','.TXT'))==[]:
-                Time='Soubor %s nebyl ve složce %s nalezen.' % (soubor[i1].replace('.FRK','.TXT').replace(path0 + '/','') , path0)
+            if glob(soubor[i1].replace('.FRK','.TXT').replace('.xy','.TXT'))==[] and glob(soubor[i1].replace('.FRK','.txt').replace('.xy','.txt'))==[]:
+                Time='Soubor %s nebyl ve složce %s nalezen.' % (soubor[i1].replace('.FRK','.TXT').replace('.xy','.TXT').replace(path0 + '/','') , path0)
                 Treal=''
                 Tlive=''
             else:
-                text=glob(soubor[i1].replace('.FRK','.TXT'))
-                f2=open(text[0])
-                for i in range(0,7):
-                    if i==6:
-                        Time=f2.readline().replace('                  ','').replace('\r\n', '').replace('/','.')
-                        Treal=f2.readline().replace('                   ','').replace(' sec\r\n', '')
-                        Tlive=f2.readline().replace('                   ','').replace(' sec\r\n', '')
-                    f2.readline()
+                if glob(soubor[i1].replace('.FRK','.TXT').replace('.xy','.TXT'))==[]:
+                    text=glob(soubor[i1].replace('.FRK','.txt').replace('.xy','.txt'))
+                    f2=open(text[0])
+                    a = f2.readline()
+                    while not 'Kalibrace' in a:
+                        if 'Start' in a:
+                            Time = 'Start date: ' + f2.readline() #skutečně chci načíst další řádek!
+                        if 'Real' in a:
+                            Treal = 'Real time: ' + a.split()[3] + ' sec\n'
+                        if 'Live' in a:       
+                            Tlive = 'Live time: ' + a.split()[3] + ' sec\n'
+                        a = f2.readline()             
+                else:
+                    text=glob(soubor[i1].replace('.FRK','.TXT'))
+                    f2=open(text[0])
+                    for i in range(0,7):
+                        if i==6:
+                            Time=f2.readline().replace('                  ','').replace('\r\n', '').replace('/','.')
+                            Treal=f2.readline().replace('                   ','').replace(' sec\r\n', '')
+                            Tlive=f2.readline().replace('                   ','').replace(' sec\r\n', '')
+                        f2.readline()
                     
         ## Určení prvku a odhadnutí produkční reakce pro jednotlivé píky
         
-            if system()=='Windows': prvek0 = os.path.basename(soubor[i1]).replace('.FRK','')
-            else: prvek0 = (soubor[i1].replace(path0 + '/', '').replace('.FRK',''))
+            if system()=='Windows': prvek0 = os.path.basename(soubor[i1]).replace('.FRK','').replace('.xy','')
+            else: prvek0 = (soubor[i1].replace(path0 + '/', '').replace('.FRK','').replace('.xy',''))
             prvek1 = ''.join([i for i in prvek0 if not i.isdigit()])     
                   
                  
@@ -431,7 +565,7 @@ class Vypocet():
             
             os.chdir('out')
             if system()=='Windows': vystup = open(soubor[i1].replace(os.path.basename(soubor[i1]), 'out\\' + os.path.basename(soubor[i1])).replace('FRK','OUTpy'),'w')
-            else: vystup = open(soubor[i1].replace(path0 + '/', '').replace('FRK','OUTpy'),'w')
+            else: vystup = open(soubor[i1].replace(path0 + '/', '').replace('FRK','OUTpy').replace('xy','OUTpy'),'w')
             vystup.write(u'Vyhodnocováno skriptem: %s \n \n' %(str(os.path.basename(__file__))))
             if system()=='Windows':
                 vystup.write(u'Vstupní parametry: \nFaktor šírky píku = %i \n' %(sirka))
